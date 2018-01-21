@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.uiresource.messenger">
+    package="com.ag">
+
 
     <application
         android:allowBackup="true"
@@ -9,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Splash"
+            android:name="com.ag.Splash"
             android:theme="@style/AppThemeFull">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,16 +18,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".SetupPhoneNumber"
+            android:name=".BaseActivity">
+        </activity>
+        <activity
+            android:name="com.ag.SetupPhoneNumber"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.ag.MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.Trans"></activity>
+        android:theme="@style/AppTheme.Trans"></activity>
         <activity
-            android:name=".ConversationActivity"
-            android:theme="@style/AppTheme.Trans"></activity>
+            android:name="com.ag.ConversationActivity"
+            android:parentActivityName="com.ag.MainActivity"
+        android:theme="@style/AppTheme.Trans"></activity>
+        <activity
+            android:name="com.ag.ComposeMessageActivity"
+            android:parentActivityName="com.ag.MainActivity"
+        android:theme="@style/AppTheme.Trans"></activity>
     </application>
 
     <uses-permission android:name="android.permission.SEND_SMS"></uses-permission>
@@ -35,5 +45,6 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS"></uses-permission>
     <uses-permission android:name="android.permission.EDIT_SMS"></uses-permission>
     <uses-permission android:name="android.permission.WRITE_SMS"></uses-permission>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
 </manifest>

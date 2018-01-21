@@ -4,8 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/new_chat"
-        android:title="New Conversation"
-        android:orderInCategory="100"
+        android:enabled="true"
         android:icon="@drawable/ic_action_edit_icon"
+        android:orderInCategory="100"
+        android:title="New Conversation"
         app:showAsAction="ifRoom" />
 </menu>
