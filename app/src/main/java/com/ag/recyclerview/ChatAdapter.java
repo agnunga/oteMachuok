@@ -35,8 +35,7 @@ public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
 
     // Create new views
     @Override
-    public ChatAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                        int viewType) {
+    public ChatAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.list_item_chat, null);

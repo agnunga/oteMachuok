@@ -33,30 +33,9 @@ public class BaseActivity extends AppCompatActivity {
     Toolbar toolbar;
     TextView title;
     public static String TAG = "Chata";
-    private static Context mContext;
     private static Context instance;
-
     private ProgressDialog mProgressDialog;
     private static final int PERMISSION_REQUEST_CODE = 1;
-
-    public BaseActivity() {
-        instance = this;
-    }
-
-    public static Context getContext() {
-        return instance.getApplicationContext();
-    }
-
-    /*public static Context getContext() {
-        if(mContext == null){
-            return mContext.getApplicationContext();
-        }
-        return mContext;
-    }
-
-    public static void setContext(Context mContext) {
-        BaseActivity.mContext = mContext;
-    }*/
 
     public static ConversationStore getConversationStore() {
         // TODO: Implement it this way.
@@ -108,7 +87,7 @@ public class BaseActivity extends AppCompatActivity {
         Uri uri = Uri.parse("content://sms/outbox");
         getContentResolver().insert(uri, values);
 
-        Toast.makeText(BaseActivity.getContext(), "Sending message: " + message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(Messola.getContext(), "Sending message: " + message, Toast.LENGTH_SHORT).show();
         // TODO: Handle undelivered messages, etc.
         try {
             SmsManager.getDefault().sendTextMessage(mConv.contact.number,
@@ -198,7 +177,20 @@ public class BaseActivity extends AppCompatActivity {
         window.setLayout(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
         return  progressDialog;
     }
+
     public void dismissProgressDialog(ProgressDialog progressDialog){
         progressDialog.dismiss();
+    }
+
+    public void startComposing(Context context, Conversation c) {
+        Intent i = new Intent(context, ConversationActivity.class);
+        if(c != null) {
+            Log.d("SimpleSMS", c.toString());
+            i.putExtra("thread_id", c.threadId);
+            i.putExtra("name", c.contact.name);
+            i.putExtra("number", c.contact.number);
+            i.putExtra("contact_id", c.contact.id);
+        }
+        startActivity(i);
     }
 }

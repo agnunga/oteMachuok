@@ -6,13 +6,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
 
 import com.ag.BaseActivity;
 import com.ag.Benchmarker;
+import com.ag.Messola;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,27 +27,26 @@ public class ConversationStore {
 	};
 
 	private static final Uri URI = Uri.parse("content://mms-sms/conversations?simple=true");
+//	private static final Uri URI = Uri.parse("content://mms-sms/conversations/");
 
 	private ArrayList<Conversation> mConversations;
 	private ArrayList<Message> messages;
 	private ContentResolver mResolver;
 	private LayoutInflater mInflater;
 	private Cursor mCursor;
-	private Adapter mAdapter;
 
 	public ConversationStore() {
-		mResolver = BaseActivity.getContext().getContentResolver();
+		mResolver = Messola.getContext().getContentResolver();
 		mConversations = new ArrayList<Conversation>(20);
-		mInflater = LayoutInflater.from(BaseActivity.getContext());
+		mInflater = LayoutInflater.from(Messola.getContext());
 		mCursor = mResolver.query(URI,
 				PROJECTION,
 				null,
 				null,
-				null
+				"date desc"
 		);
 
 		mCursor.registerContentObserver(new ChangeObserver());
-		mAdapter = new Adapter();
 	}
 
 	public void update() {
@@ -79,8 +75,7 @@ public class ConversationStore {
 			conv.contact = recipient;
 		} while(mCursor.moveToNext());
 
-		mAdapter.notifyDataSetChanged();
-		Benchmarker.stop("ConvUpdate");
+//		Benchmarker.stop("ConvUpdate");
 	}
 
 	public List<Conversation> getAllConversations(){
@@ -90,41 +85,6 @@ public class ConversationStore {
 
 	public Conversation getConversation(int position) {
 		return mConversations.get(position);
-	}
-
-	public void bindView(ListView listView) {
-		listView.setAdapter(mAdapter);
-	}
-
-	private class Adapter extends BaseAdapter {
-		@Override
-		public int getCount() {
-			return mConversations.size();
-		}
-
-		@Override
-		public Object getItem(int position) {
-			return mConversations.get(position);
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return mConversations.get(position).threadId;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-//			if(convertView == null) {
-//				convertView = mInflater.inflate(R.layout.conversation_list_item,
-//						parent,
-//						false);
-//			}
-//			ConversationActivity c = mConversations.get(position);
-//			ConversationListItem entry = (ConversationListItem) convertView;
-//			entry.bind(c);
-//			return entry;
-			return null;
-		}
 	}
 
 	private class ChangeObserver extends ContentObserver {

@@ -8,6 +8,7 @@ import android.provider.ContactsContract.PhoneLookup;
 import android.util.Log;
 
 import com.ag.BaseActivity;
+import com.ag.Messola;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -27,9 +28,9 @@ public class ContactStore {
 	
 	private static final String CACHE_FILE_NAME = "ContactsCache.txt";
 	private static final String TAG = "ContactStore";
-	
+
 	static {
-		sContext = BaseActivity.getContext();
+		sContext = Messola.getContext();
 		sResolver = sContext.getContentResolver();
 		sContacts = new HashMap<Long, Contact>(20);
 	}

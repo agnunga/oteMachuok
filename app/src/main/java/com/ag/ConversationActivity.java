@@ -17,8 +17,10 @@ import com.ag.data.Message;
 import com.ag.data.MessageStore;
 import com.ag.recylcerchat.ChatData;
 import com.ag.recylcerchat.ConversationRecyclerView;
+import com.ag.utilis.DateUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ConversationActivity extends BaseActivity {
@@ -50,7 +52,7 @@ public class ConversationActivity extends BaseActivity {
             mConv.threadId = threadId;
 
             mStore = new MessageStore(mConv.threadId, mConv.contact.name);
-            mStore.update();
+             mStore.update();
             setupToolbarWithUpNav(R.id.toolbar, mConv.contact.name, R.drawable.ic_action_back);
             System.out.println("SIZE mItems =============== " + mItems.size());
             mItems = mStore.getAllMessage();
@@ -99,13 +101,15 @@ public class ConversationActivity extends BaseActivity {
                     }
                 }
             });
+        }else {
+            Log.i(TAG, "Has no thread id");
         }
     }
 
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
-        Intent i = new Intent(getContext(), MainActivity.class);
+        Intent i = new Intent(Messola.getContext(), MainActivity.class);
         startActivity(i);
     }
 
@@ -114,9 +118,9 @@ public class ConversationActivity extends BaseActivity {
 
         for (Message m: mItems){
             ChatData item = new ChatData();
-            item.setType(m.type+"");
+            item.setType(m.type);
             item.setText(m.body);
-            item.setTime("4:30pm");
+            item.setTime(DateUtil.ago2(new Date(m.date)));
             data.add(item);
         }
         return data;

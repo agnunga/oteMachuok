@@ -20,8 +20,10 @@ import com.ag.data.Conversation;
 import com.ag.data.ConversationStore;
 import com.ag.recyclerview.Chat;
 import com.ag.recyclerview.ChatAdapter;
+import com.ag.utilis.DateUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -55,26 +57,29 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new ChatAdapter(getContext(),setData(),this);
+        mAdapter = new ChatAdapter(getContext(), setData(),this);
         mRecyclerView.setAdapter (mAdapter);
 
         return view;
     }
     public List<Chat> setData(){
         List<Conversation> conversations = conversationStore.getAllConversations();
+//        Log.i(Messola.TAG, conversations.get(0).toString());
+
+//        conversations.remove(0);
         List<Chat> data = new ArrayList<>();
 
         System.out.println("=============================================="+conversations.size());
 
-        //        @DrawableRes int img[]= {R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 };
+        //@DrawableRes int img[]= {R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 };
 
         for (Conversation c: conversations) {
             Chat chat = new Chat();
-            chat.setmTime("5:04pm");
+            chat.setmTime(DateUtil.ago(new Date(c.date), new Date()));
             chat.setName(c.contact.name);
             chat.setImage(R.drawable.userpic);
             chat.setOnline(true);
-            chat.setLastChat(c.lastMsgId +" bhjg ");
+            chat.setLastChat(c.lastMsgId+"");
             data.add(chat);
         }
         return data;
@@ -83,11 +88,7 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
     @Override
     public void onItemClicked (int position) {
         startActivity(new Intent(getActivity(), ConversationActivity.class));
-        Conversation c = null;
-        if(position > 0) {
-            c = conversationStore.getConversation(position);
-        }
-        startComposing(c);
+        startComposing(conversationStore.getConversation(position));
     }
 
     private void startComposing(Conversation c) {

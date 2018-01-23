@@ -22,8 +22,7 @@ import android.widget.Toast;
 
 import com.ag.data.Conversation;
 
-public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     TextView chats;
     NavigationView navigationView, navigationViewBottom;
     DrawerLayout drawer;
@@ -96,15 +95,15 @@ public class MainActivity extends BaseActivity
                 return true;
             }case R.menu.menu_edit : {
                 Log.i(TAG, "\n\n\n\n===Create new messo===\n\n\n\n\n");
-                Intent i = new Intent(getContext(), ComposeMessageActivity.class);
+                Intent i = new Intent(Messola.getContext(), ComposeMessageActivity.class);
                 startActivity(i);
             }case R.id.new_chat : {
                 Log.i(TAG, "\n\n\n\n===Create new messo===\n\n\n\n\n");
-                Intent i = new Intent(BaseActivity.getContext(), ComposeMessageActivity.class);
+                Intent i = new Intent(Messola.getContext(), ComposeMessageActivity.class);
                 startActivity(i);
             }case R.menu.menu_add : {
                 Log.i(TAG, "\n\n\n\n===Create new messo===\n\n\n\n\n");
-                Intent i = new Intent(getContext(), ComposeMessageActivity.class);
+                Intent i = new Intent(Messola.getContext(), ComposeMessageActivity.class);
                 startActivity(i);
             }
         }
