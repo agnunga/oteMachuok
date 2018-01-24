@@ -61,18 +61,20 @@ public class ConversationStore {
 		mCursor.moveToFirst();
 		do {
 			Conversation conv = new Conversation();
-			conv.threadId = mCursor.getLong(0);
-			conv.date = mCursor.getLong(1);
-			conv.msgCount = mCursor.getInt(2);
-			conv.lastMsgId = mCursor.getInt(mCursor.getColumnIndex("_id"));
-			conv.read = mCursor.getInt(5) == 1;
+			conv.setThreadId(mCursor.getLong(0));
+			conv.setDate(mCursor.getLong(1));
+			conv.setMsgCount(mCursor.getString(2));
+			conv.setRecipient_ids(mCursor.getString(3));
+			conv.setSnippet(mCursor.getString(4));
+			conv.setRead(mCursor.getInt(5));
+			conv.setType(mCursor.getString(6));
 
 			if(!mConversations.contains(conv))
 				mConversations.add(conv);
 
 			int recipient_id = mCursor.getInt(3);
 			Contact recipient = ContactStore.getByRecipientId(recipient_id);
-			conv.contact = recipient;
+			conv.setContact(recipient);
 		} while(mCursor.moveToNext());
 
 //		Benchmarker.stop("ConvUpdate");

@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.ag.BaseActivity;
 import com.ag.Messola;
+import com.ag.R;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -37,19 +38,19 @@ public class ContactStore {
 	
 	public static Contact getByNumber(String number) {
 		for(Contact c : sContacts.values()) {
-			if(c.number.equals(number))
+			if(c.getNumber().equals(number))
 				return c;
 		}
 		
 		String name = resolveNumber(number);
-		Contact c = new Contact(-1, name, number);
+		Contact c = new Contact(-1, name, number, R.drawable.userpic);
 		// TODO: Figure out the recipient ID mess.
 		return c;
 	}
 	
 	public static Contact getByName(String name) {
 		for(Contact c : sContacts.values()) {
-			if(c.name.equals(name))
+			if(c.getName().equals(name))
 				return c;
 		}
 		return null;
@@ -62,10 +63,10 @@ public class ContactStore {
 		String number = resolveIdToName(recipientId);
 		String name = resolveNumber(number);
 		
-		Contact c = new Contact(recipientId, name, number);
+		Contact c = new Contact(recipientId, name, number, R.drawable.userpic);
 		
 		if(name != null)
-			sContacts.put(c.id, c);
+			sContacts.put(c.getId(), c);
 		return c;
 	}
 	
@@ -94,9 +95,9 @@ public class ContactStore {
 						" ContactsCache!");
 				return;
 			}
-			
+
 			Contact c = Contact.parseCached(s);
-			sContacts.put(c.id, c);
+			sContacts.put(c.getId(), c);
 		}
 	}
 	

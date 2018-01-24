@@ -8,7 +8,10 @@ import android.view.ViewGroup;
 
 
 import com.ag.R;
+import com.ag.data.Message;
+import com.ag.utilis.DateUtil;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,13 +21,13 @@ import java.util.List;
 public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // The items to display in your RecyclerView
-    private List<ChatData> items;
+    private List<Message> items;
     private Context mContext;
 
     private final int DATE = 0, YOU = 1, ME = 2;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public ConversationRecyclerView(Context context, List<ChatData> items) {
+    public ConversationRecyclerView(Context context, List<Message> items) {
         this.mContext = context;
         this.items = items;
     }
@@ -69,7 +72,7 @@ public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.
         }
         return viewHolder;
     }
-    public void addItem(List<ChatData> item) {
+    public void addItem(List<Message> item) {
         items.addAll(item);
         notifyDataSetChanged();
     }
@@ -92,16 +95,16 @@ public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.
     }
 
     private void configureViewHolder3(HolderMe vh1, int position) {
-            vh1.getTime().setText(items.get(position).getTime());
-            vh1.getChatText().setText(items.get(position).getText());
+            vh1.getTime().setText(DateUtil.ago2(new Date(items.get(position).getDate())));
+            vh1.getChatText().setText(items.get(position).getBody());
     }
 
     private void configureViewHolder2(HolderYou vh1, int position) {
-            vh1.getTime().setText(items.get(position).getTime());
-            vh1.getChatText().setText(items.get(position).getText());
+            vh1.getTime().setText(DateUtil.ago2(new Date(items.get(position).getDate())));
+            vh1.getChatText().setText(items.get(position).getBody());
     }
     private void configureViewHolder1(HolderDate vh1, int position) {
-            vh1.getDate().setText(items.get(position).getText());
+            vh1.getDate().setText(items.get(position).getBody());
     }
 
 }

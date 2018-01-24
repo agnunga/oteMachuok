@@ -11,7 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ag.R;
+import com.ag.data.Conversation;
+import com.ag.data.Message;
+import com.ag.utilis.CommonUtil;
+import com.ag.utilis.DateUtil;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,13 +25,13 @@ import java.util.List;
 
 public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
 
-    private List<Chat> mArrayList;
+    private List<Conversation> mArrayList;
     private Context mContext;
     private ViewHolder.ClickListener clickListener;
 
 
 
-    public ChatAdapter (Context context, List<Chat> arrayList,ViewHolder.ClickListener clickListener) {
+    public ChatAdapter (Context context, List<Conversation> arrayList, ViewHolder.ClickListener clickListener) {
         this.mArrayList = arrayList;
         this.mContext = context;
         this.clickListener = clickListener;
@@ -48,7 +53,7 @@ public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
 
-        viewHolder.tvName.setText(mArrayList.get(position).getName());
+        viewHolder.tvName.setText(mArrayList.get(position).getContact().getName());
         if (isSelected(position)) {
             viewHolder.checked.setChecked(true);
             viewHolder.checked.setVisibility(View.VISIBLE);
@@ -56,14 +61,15 @@ public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
             viewHolder.checked.setChecked(false);
             viewHolder.checked.setVisibility(View.GONE);
         }
-        viewHolder.tvTime.setText(mArrayList.get(position).getTime());
-        viewHolder.userPhoto.setImageResource(mArrayList.get(position).getImage());
-        if (mArrayList.get(position).getOnline()){
+        viewHolder.tvTime.setText(DateUtil.ago(new Date(mArrayList.get(position).getDate())));
+        viewHolder.userPhoto.setImageResource(mArrayList.get(position).getContact().getImage());
+        if (mArrayList.get(position).isOnline()){
             viewHolder.onlineView.setVisibility(View.VISIBLE);
         }else
             viewHolder.onlineView.setVisibility(View.INVISIBLE);
 
-        viewHolder.tvLastChat.setText(mArrayList.get(position).getLastChat());
+        viewHolder.tvLastChat.setText(CommonUtil.cutString(mArrayList.get(position).getSnippet()));
+        viewHolder.tvCount.setText(CommonUtil.cutCount(mArrayList.get(position).getMsgCount()));
     }
 
     @Override
@@ -76,6 +82,7 @@ public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
         public TextView tvName;
         public TextView tvTime;
         public TextView tvLastChat;
+        public TextView tvCount;
         public ImageView userPhoto;
         public boolean online = false;
         private final View onlineView;
@@ -93,6 +100,7 @@ public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
             //selectedOverlay = (View) itemView.findViewById(R.id.selected_overlay);
             tvTime = (TextView) itemLayoutView.findViewById(R.id.tv_time);
             tvLastChat = (TextView) itemLayoutView.findViewById(R.id.tv_last_chat);
+            tvCount = (TextView) itemLayoutView.findViewById(R.id.tv_unread_count);
             userPhoto = (ImageView) itemLayoutView.findViewById(R.id.iv_user_photo);
             onlineView = (View) itemLayoutView.findViewById(R.id.online_indicator);
             checked = (CheckBox) itemLayoutView.findViewById(R.id.chk_list);

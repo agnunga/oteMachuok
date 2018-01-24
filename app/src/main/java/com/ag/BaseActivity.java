@@ -77,11 +77,11 @@ public class BaseActivity extends AppCompatActivity {
 
     public void sendMessage(Conversation mConv, String message) {
         ContentValues values = new ContentValues(7);
-        values.put("address", mConv.contact.number);
+        values.put("address", mConv.getContact().getNumber());
         values.put("read", false);
         values.put("subject", "");
         values.put("body", message);
-        values.put("thread_id", mConv.threadId);
+        values.put("thread_id", mConv.getThreadId());
         values.put("type", 2);
 
         Uri uri = Uri.parse("content://sms/outbox");
@@ -90,7 +90,7 @@ public class BaseActivity extends AppCompatActivity {
         Toast.makeText(Messola.getContext(), "Sending message: " + message, Toast.LENGTH_SHORT).show();
         // TODO: Handle undelivered messages, etc.
         try {
-            SmsManager.getDefault().sendTextMessage(mConv.contact.number,
+            SmsManager.getDefault().sendTextMessage(mConv.getContact().getNumber(),
                     null,
                     message.toString(),
                     null,
@@ -186,10 +186,10 @@ public class BaseActivity extends AppCompatActivity {
         Intent i = new Intent(context, ConversationActivity.class);
         if(c != null) {
             Log.d("SimpleSMS", c.toString());
-            i.putExtra("thread_id", c.threadId);
-            i.putExtra("name", c.contact.name);
-            i.putExtra("number", c.contact.number);
-            i.putExtra("contact_id", c.contact.id);
+            i.putExtra("thread_id", c.getThreadId());
+            i.putExtra("name", c.getContact().getName());
+            i.putExtra("number", c.getContact().getNumber());
+            i.putExtra("contact_id", c.getContact().getId());
         }
         startActivity(i);
     }

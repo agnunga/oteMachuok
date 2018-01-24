@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 
 import com.ag.R;
+import com.ag.data.Contact;
 
 import java.util.List;
 
@@ -24,8 +25,6 @@ public class ContactAdapter extends SelectableAdapter<ContactAdapter.ViewHolder>
     private Context mContext;
     private ContactAdapter.ViewHolder.ClickListener clickListener;
 
-
-
     public ContactAdapter (Context context, List<Contact> arrayList,ContactAdapter.ViewHolder.ClickListener clickListener) {
         this.mArrayList = arrayList;
         this.mContext = context;
@@ -35,20 +34,14 @@ public class ContactAdapter extends SelectableAdapter<ContactAdapter.ViewHolder>
 
     // Create new views
     @Override
-    public ContactAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
-
-        View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.list_item_contact, null);
-
+    public ContactAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_contact, null);
         ContactAdapter.ViewHolder viewHolder = new ContactAdapter.ViewHolder(itemLayoutView,clickListener);
-
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(ContactAdapter.ViewHolder viewHolder, int position) {
-
         viewHolder.tvName.setText(mArrayList.get(position).getName());
         viewHolder.userPhoto.setImageResource(mArrayList.get(position).getImage());
     }

@@ -15,7 +15,7 @@ import com.ag.data.Contact;
 import com.ag.data.Conversation;
 import com.ag.data.Message;
 import com.ag.data.MessageStore;
-import com.ag.recylcerchat.ChatData;
+
 import com.ag.recylcerchat.ConversationRecyclerView;
 import com.ag.utilis.DateUtil;
 
@@ -46,14 +46,14 @@ public class ConversationActivity extends BaseActivity {
             String number = i.getStringExtra("number");
             String name = i.getStringExtra("name");
 
-            Contact c = new Contact(contactId, name, number);
+            Contact c = new Contact(contactId, name, number, R.drawable.userpic);
             mConv = new Conversation();
-            mConv.contact = c;
-            mConv.threadId = threadId;
+            mConv.setContact(c);
+            mConv.setThreadId(threadId);
 
-            mStore = new MessageStore(mConv.threadId, mConv.contact.name);
+            mStore = new MessageStore(mConv.getThreadId(), mConv.getContact().getName());
              mStore.update();
-            setupToolbarWithUpNav(R.id.toolbar, mConv.contact.name, R.drawable.ic_action_back);
+            setupToolbarWithUpNav(R.id.toolbar, mConv.getContact().getName(), R.drawable.ic_action_back);
             System.out.println("SIZE mItems =============== " + mItems.size());
             mItems = mStore.getAllMessage();
             System.out.println("SIZE mItems =============== " + mItems.size());
@@ -61,7 +61,7 @@ public class ConversationActivity extends BaseActivity {
             mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
             mRecyclerView.setHasFixedSize(true);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-            mAdapter = new ConversationRecyclerView(this,setData());
+            mAdapter = new ConversationRecyclerView(this, mItems);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.postDelayed(new Runnable() {
                 @Override
@@ -89,11 +89,11 @@ public class ConversationActivity extends BaseActivity {
                 public void onClick(View view) {
                     if (text.getText().length() > 0){
                         sendMessage(mConv, text.getText().toString());
-                        List<ChatData> data = new ArrayList<ChatData>();
-                        ChatData item = new ChatData();
-                        item.setTime("6:00pm");
+                        List<Message> data = new ArrayList<>();
+                        Message item = new Message();
+                        item.setDate(new Date().getTime());
                         item.setType("2");
-                        item.setText(text.getText().toString());
+                        item.setBody(text.getText().toString());
                         data.add(item);
                         mAdapter.addItem(data);
                         mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() -1);
@@ -111,19 +111,6 @@ public class ConversationActivity extends BaseActivity {
 //        super.onBackPressed();
         Intent i = new Intent(Messola.getContext(), MainActivity.class);
         startActivity(i);
-    }
-
-    public List<ChatData> setData(){
-        List<ChatData> data = new ArrayList<>();
-
-        for (Message m: mItems){
-            ChatData item = new ChatData();
-            item.setType(m.type);
-            item.setText(m.body);
-            item.setTime(DateUtil.ago2(new Date(m.date)));
-            data.add(item);
-        }
-        return data;
     }
 
     @Override

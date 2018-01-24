@@ -12,7 +12,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ag.recyclerview.Contact;
+import com.ag.data.Contact;
 import com.ag.recyclerview.ContactAdapter;
 
 import java.util.ArrayList;

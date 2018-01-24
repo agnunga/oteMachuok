@@ -81,16 +81,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.i("OLOO", "\n\n\n\n===Selected "+item.getItemId()+
-                "=== home = "+android.R.id.home +
-                "=== menu_edit "+R.menu.menu_edit+
-                "=== R.id.new_chat "+R.id.new_chat+
-                "=== R.menu.menu_add "+R.menu.menu_add+
+                "=== home = " + android.R.id.home +
+                "=== menu_edit " + R.menu.menu_edit +
+                "=== R.id.new_chat " + R.id.new_chat +
+                "=== R.menu.menu_add " + R.menu.menu_add +
                 "\n\n\n\n\n");
 
         switch (item.getItemId()) {
             case android.R.id.home: {
                 Log.i(TAG, "\n\n\n\n===home===\n\n\n\n\n");
-
                 drawer.openDrawer(GravityCompat.START);  // OPEN DRAWER
                 return true;
             }case R.menu.menu_edit : {

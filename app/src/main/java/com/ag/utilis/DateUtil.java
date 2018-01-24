@@ -30,7 +30,8 @@ public class DateUtil  implements Serializable {
 
 
 
-    public static String ago(Date date1, Date date2) {
+    public static String ago(Date date1) {
+        Date date2 = new Date();
         int years = DifferenceInYears(date1, date2).intValue();
         if (years >= 1){
             if(years > 1)

@@ -18,8 +18,8 @@ import android.widget.TextView;
 
 import com.ag.data.Conversation;
 import com.ag.data.ConversationStore;
-import com.ag.recyclerview.Chat;
 import com.ag.recyclerview.ChatAdapter;
+import com.ag.utilis.CommonUtil;
 import com.ag.utilis.DateUtil;
 
 import java.util.ArrayList;
@@ -57,32 +57,11 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new ChatAdapter(getContext(), setData(),this);
+        List<Conversation> conversations = conversationStore.getAllConversations();
+        mAdapter = new ChatAdapter(getContext(), conversations,this);
         mRecyclerView.setAdapter (mAdapter);
 
         return view;
-    }
-    public List<Chat> setData(){
-        List<Conversation> conversations = conversationStore.getAllConversations();
-//        Log.i(Messola.TAG, conversations.get(0).toString());
-
-//        conversations.remove(0);
-        List<Chat> data = new ArrayList<>();
-
-        System.out.println("=============================================="+conversations.size());
-
-        //@DrawableRes int img[]= {R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 , R.drawable.userpic , R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4 };
-
-        for (Conversation c: conversations) {
-            Chat chat = new Chat();
-            chat.setmTime(DateUtil.ago(new Date(c.date), new Date()));
-            chat.setName(c.contact.name);
-            chat.setImage(R.drawable.userpic);
-            chat.setOnline(true);
-            chat.setLastChat(c.lastMsgId+"");
-            data.add(chat);
-        }
-        return data;
     }
 
     @Override
@@ -95,10 +74,10 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
         Intent i = new Intent(getActivity(), ConversationActivity.class);
         if(c != null) {
             Log.d("SimpleSMS", c.toString());
-            i.putExtra("thread_id", c.threadId);
-            i.putExtra("name", c.contact.name);
-            i.putExtra("number", c.contact.number);
-            i.putExtra("contact_id", c.contact.id);
+            i.putExtra("thread_id", c.getThreadId());
+            i.putExtra("name", c.getContact().getName());
+            i.putExtra("number", c.getContact().getNumber());
+            i.putExtra("contact_id", c.getContact().getId());
         }
         startActivity(i);
     }

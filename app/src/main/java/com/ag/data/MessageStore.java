@@ -78,17 +78,17 @@ public class MessageStore {
         do {
             Message m = new Message();
 
-            m._id = mCursor.getInt(0);
-            m.thread_id = mCursor.getString(1);
-            m.address = mCursor.getString(2);
-            m.person = mCursor.getString(3);
-            m.date = mCursor.getLong(4);
-            m.protocol = mCursor.getString(5);
-            m.read = mCursor.getString(6);
-            m.status = mCursor.getString(7);
-            m.type = mCursor.getString(8);
-            m.subject = mCursor.getString(9);
-            m.body = mCursor.getString(10);
+            m.set_id(mCursor.getInt(0));
+            m.setThread_id(mCursor.getString(1));
+            m.setAddress(mCursor.getString(2));
+            m.setPerson(mCursor.getString(3));
+            m.setDate(mCursor.getLong(4));
+            m.setProtocol(mCursor.getString(5));
+            m.setRead(mCursor.getString(6));
+            m.setStatus(mCursor.getString(7));
+            m.setType(mCursor.getString(8));
+            m.setSubject(mCursor.getString(9));
+            m.setBody(mCursor.getString(10));
 
             mItems.add(m);
         } while(mCursor.moveToNext());
@@ -111,18 +111,18 @@ public class MessageStore {
 
     private Spannable formatMessage(Message msg) {
         SpannableStringBuilder sb = new SpannableStringBuilder();
-        if(msg.type == Message.T_INBOUND) {
+        if(msg.getType() == Message.T_INBOUND) {
             sb.append(mName);
         }
         else
             sb.append("Me");
         sb.append(": ");
-        sb.append(msg.body);
+        sb.append(msg.getBody());
 
         // TODO: Refactor the shit out of this method.
         sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
                 0,
-                msg.type == "1" ? mName.length() + 1 : 3,
+                msg.getType() == "1" ? mName.length() + 1 : 3,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         );
 

@@ -52,13 +52,12 @@ public class ComposeMessageActivity extends BaseActivity {
             String name = i.getStringExtra("name");
             String number = i.getStringExtra("number");
 
-            Contact c = new Contact(-1, name, number);
+            Contact c = new Contact(-1, name, number, R.drawable.userpic);
             mConv = new Conversation();
-            mConv.contact = c;
-            mConv.threadId = threadId;
-
+            mConv.setContact(c);
+            mConv.setThreadId(threadId);
             // TODO: Need to remove the name parameter.
-            mStore = new MessageStore(mConv.threadId, mConv.contact.name);
+            mStore = new MessageStore(mConv.getThreadId(), mConv.getContact().getName());
             mStore.bindView(mHistory);
             mStore.update();
         }
@@ -96,14 +95,14 @@ public class ComposeMessageActivity extends BaseActivity {
 
             if(mConv == null) {
                 Contact c = ContactStore.getByNumber(mSubject.getText().toString());
-                long threadId = Telephony.Threads.getOrCreateThreadId(Messola.getContext(), c.number);
+                long threadId = Telephony.Threads.getOrCreateThreadId(Messola.getContext(), c.getNumber());
                 mConv = new Conversation();
-                mConv.contact = c;
-                mConv.threadId = threadId;
+                mConv.setContact(c);
+                mConv.setThreadId(threadId);
             }
             sendMessage(mConv, text.toString());
             if(mStore == null) {
-                mStore = new MessageStore(mConv.threadId, mConv.contact.name);
+                mStore = new MessageStore(mConv.getThreadId(), mConv.getContact().getName());
                 mStore.bindView(mHistory);
             }
 			/*mStore.update();
@@ -114,40 +113,12 @@ public class ComposeMessageActivity extends BaseActivity {
         }
     }
 
-    /*private void sendMessage(String message) {
-        // Send the message
-        ContentValues values = new ContentValues(7);
-        values.put("address", mConv.contact.number);
-        values.put("read", false);
-        values.put("subject", "");
-        values.put("body", message);
-        values.put("thread_id", mConv.threadId);
-        values.put("type", 2);
-
-        Uri uri = Uri.parse("content://sms/outbox");
-        getContentResolver().insert(uri, values);
-
-        showToast("Sending... ");
-        // TODO: Handle undelivered messages, etc.
-
-        try {
-            SmsManager.getDefault().sendTextMessage(mConv.contact.number,
-                    null,
-                    message.toString(),
-                    null,
-                    null);
-            showToast("Message sent...");
-        }catch (Exception e){
-            showToast("Failed! Message not sent.");
-        }
-    }
-    */
     private void updateTitleBar() {
         if(mConv == null) {
             mSubject.setVisibility(View.VISIBLE);
         }
         else {
-            setTitle(mConv.contact.getFormatted());
+            setTitle(mConv.getContact().getFormatted());
             mSubject.setVisibility(View.GONE);
         }
     }
