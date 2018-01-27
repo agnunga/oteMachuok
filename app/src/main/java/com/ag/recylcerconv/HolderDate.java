@@ -1,4 +1,4 @@
-package com.ag.recylcerchat;
+package com.ag.recylcerconv;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

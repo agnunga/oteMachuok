@@ -1,14 +1,11 @@
 package com.ag;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.support.design.widget.NavigationView;
@@ -18,9 +15,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.ag.data.Conversation;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     TextView chats;

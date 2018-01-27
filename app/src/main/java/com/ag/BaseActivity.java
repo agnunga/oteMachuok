@@ -20,8 +20,8 @@ import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ag.data.Conversation;
-import com.ag.data.ConversationStore;
+import com.ag.data.Chat;
+import com.ag.data.ChatStore;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -37,7 +37,7 @@ public class BaseActivity extends AppCompatActivity {
     private ProgressDialog mProgressDialog;
     private static final int PERMISSION_REQUEST_CODE = 1;
 
-    public static ConversationStore getConversationStore() {
+    public static ChatStore getConversationStore() {
         // TODO: Implement it this way.
         return null;
     }
@@ -75,7 +75,7 @@ public class BaseActivity extends AppCompatActivity {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
-    public void sendMessage(Conversation mConv, String message) {
+    public void sendMessage(Chat mConv, String message) {
         ContentValues values = new ContentValues(7);
         values.put("address", mConv.getContact().getNumber());
         values.put("read", false);
@@ -95,10 +95,10 @@ public class BaseActivity extends AppCompatActivity {
                     message.toString(),
                     null,
                     null);
-            Log.d(TAG,"Message Sent");
-            showToast("Message Sent");
+            Log.d(TAG,"Conv Sent");
+            showToast("Conv Sent");
         }catch (Exception e){
-            Log.d(TAG, "Message Sending Failed, Error :  " + e.getMessage());
+            Log.d(TAG, "Conv Sending Failed, Error :  " + e.getMessage());
             showToast("Sending SMS Failed");
         }
     }
@@ -182,7 +182,7 @@ public class BaseActivity extends AppCompatActivity {
         progressDialog.dismiss();
     }
 
-    public void startComposing(Context context, Conversation c) {
+    public void startComposing(Context context, Chat c) {
         Intent i = new Intent(context, ConversationActivity.class);
         if(c != null) {
             Log.d("SimpleSMS", c.toString());

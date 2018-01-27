@@ -11,8 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ag.R;
-import com.ag.data.Conversation;
-import com.ag.data.Message;
+import com.ag.data.Chat;
 import com.ag.utilis.CommonUtil;
 import com.ag.utilis.DateUtil;
 
@@ -25,14 +24,14 @@ import java.util.List;
 
 public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
 
-    private List<Conversation> mArrayList;
+    private List<Chat> chatList;
     private Context mContext;
     private ViewHolder.ClickListener clickListener;
 
 
 
-    public ChatAdapter (Context context, List<Conversation> arrayList, ViewHolder.ClickListener clickListener) {
-        this.mArrayList = arrayList;
+    public ChatAdapter (Context context, List<Chat> arrayList, ViewHolder.ClickListener clickListener) {
+        this.chatList = arrayList;
         this.mContext = context;
         this.clickListener = clickListener;
 
@@ -53,7 +52,7 @@ public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
 
-        viewHolder.tvName.setText(mArrayList.get(position).getContact().getName());
+        viewHolder.tvName.setText(chatList.get(position).getContact().getName());
         if (isSelected(position)) {
             viewHolder.checked.setChecked(true);
             viewHolder.checked.setVisibility(View.VISIBLE);
@@ -61,20 +60,29 @@ public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
             viewHolder.checked.setChecked(false);
             viewHolder.checked.setVisibility(View.GONE);
         }
-        viewHolder.tvTime.setText(DateUtil.ago(new Date(mArrayList.get(position).getDate())));
-        viewHolder.userPhoto.setImageResource(mArrayList.get(position).getContact().getImage());
-        if (mArrayList.get(position).isOnline()){
+        viewHolder.tvTime.setText(DateUtil.ago(new Date(chatList.get(position).getDate())));
+        viewHolder.userPhoto.setImageResource(chatList.get(position).getContact().getImage());
+        if (chatList.get(position).isOnline()){
             viewHolder.onlineView.setVisibility(View.VISIBLE);
         }else
             viewHolder.onlineView.setVisibility(View.INVISIBLE);
 
-        viewHolder.tvLastChat.setText(CommonUtil.cutString(mArrayList.get(position).getSnippet()));
-        viewHolder.tvCount.setText(CommonUtil.cutCount(mArrayList.get(position).getMsgCount()));
+        viewHolder.tvLastChat.setText(chatList.get(position).getSnippet());
+        viewHolder.tvLastChat.setText(chatList.get(position).getSnippet());
+//        viewHolder.tvCount.setText(CommonUtil.cutCount(chatList.get(position).getMsgCount()));
+        long unreadCount  = chatList.get(position).getUnreadCount();
+        if (unreadCount > 0) {
+            viewHolder.tvCount.setText(CommonUtil.cutCount(unreadCount));
+            viewHolder.tvName.setTextColor(mContext.getResources().getColor(R.color.colorAccent));
+        }else {
+            viewHolder.tvName.setTextColor(mContext.getResources().getColor(R.color.colorTextBlack));
+            viewHolder.tvCount.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mArrayList.size();
+        return chatList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener,View.OnLongClickListener  {

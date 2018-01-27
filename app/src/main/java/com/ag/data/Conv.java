@@ -1,6 +1,6 @@
 package com.ag.data;
 
-public class Message {
+public class Conv {
 	public static final String T_INBOUND = "1";
 	public static final String T_OUTBOUND = "2";
 	

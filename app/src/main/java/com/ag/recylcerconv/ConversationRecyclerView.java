@@ -1,4 +1,4 @@
-package com.ag.recylcerchat;
+package com.ag.recylcerconv;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 
 import com.ag.R;
-import com.ag.data.Message;
+import com.ag.data.Conv;
 import com.ag.utilis.DateUtil;
 
 import java.util.Date;
@@ -20,32 +20,32 @@ import java.util.List;
 
 public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    // The items to display in your RecyclerView
-    private List<Message> items;
+    // The convList to display in your RecyclerView
+    private List<Conv> convList;
     private Context mContext;
 
     private final int DATE = 0, YOU = 1, ME = 2;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public ConversationRecyclerView(Context context, List<Message> items) {
+    public ConversationRecyclerView(Context context, List<Conv> convList) {
         this.mContext = context;
-        this.items = items;
+        this.convList = convList;
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return this.items.size();
+        return this.convList.size();
     }
 
     @Override
     public int getItemViewType(int position) {
         //More to come
-        if (items.get(position).getType().equals("0")) {
+        if (convList.get(position).getType().equals("0")) {
             return DATE;
-        } else if (items.get(position).getType().equals("1")) {
+        } else if (convList.get(position).getType().equals("1")) {
             return YOU;
-        }else if (items.get(position).getType().equals("2")) {
+        }else if (convList.get(position).getType().equals("2")) {
             return ME;
         }
         return -1;
@@ -72,8 +72,8 @@ public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.
         }
         return viewHolder;
     }
-    public void addItem(List<Message> item) {
-        items.addAll(item);
+    public void addItem(List<Conv> item) {
+        convList.addAll(item);
         notifyDataSetChanged();
     }
     @Override
@@ -95,16 +95,16 @@ public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.
     }
 
     private void configureViewHolder3(HolderMe vh1, int position) {
-            vh1.getTime().setText(DateUtil.ago2(new Date(items.get(position).getDate())));
-            vh1.getChatText().setText(items.get(position).getBody());
+            vh1.getTime().setText(DateUtil.ago2(new Date(convList.get(position).getDate())));
+            vh1.getChatText().setText(convList.get(position).getBody());
     }
 
     private void configureViewHolder2(HolderYou vh1, int position) {
-            vh1.getTime().setText(DateUtil.ago2(new Date(items.get(position).getDate())));
-            vh1.getChatText().setText(items.get(position).getBody());
+            vh1.getTime().setText(DateUtil.ago2(new Date(convList.get(position).getDate())));
+            vh1.getChatText().setText(convList.get(position).getBody());
     }
     private void configureViewHolder1(HolderDate vh1, int position) {
-            vh1.getDate().setText(items.get(position).getBody());
+            vh1.getDate().setText(convList.get(position).getBody());
     }
 
 }

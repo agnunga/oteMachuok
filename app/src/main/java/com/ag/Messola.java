@@ -1,6 +1,6 @@
 package com.ag;
 
-import com.ag.data.ConversationStore;
+import com.ag.data.ChatStore;
 
 import android.content.Context;
 
@@ -16,7 +16,7 @@ public class Messola extends android.app.Application {
 		return instance.getApplicationContext();
 	}
 	
-	public static ConversationStore getConversationStore() {
+	public static ChatStore getConversationStore() {
 		// TODO: Implement it this way.
 		return null;
 	}

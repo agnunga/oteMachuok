@@ -2,27 +2,22 @@ package com.ag;
 
 
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ag.data.Contact;
 import com.ag.data.ContactStore;
-import com.ag.data.Conversation;
-import com.ag.data.MessageStore;
+import com.ag.data.Chat;
+import com.ag.data.ConvStore;
 
 public class ComposeMessageActivity extends BaseActivity {
     private ListView mHistory;
@@ -30,8 +25,8 @@ public class ComposeMessageActivity extends BaseActivity {
     private TextView mTextEditor;
     private Button mSendButton;
 
-    private MessageStore mStore;
-    private Conversation mConv;
+    private ConvStore convStore;
+    private Chat chatItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +48,13 @@ public class ComposeMessageActivity extends BaseActivity {
             String number = i.getStringExtra("number");
 
             Contact c = new Contact(-1, name, number, R.drawable.userpic);
-            mConv = new Conversation();
-            mConv.setContact(c);
-            mConv.setThreadId(threadId);
+            chatItem = new Chat();
+            chatItem.setContact(c);
+            chatItem.setThreadId(threadId);
             // TODO: Need to remove the name parameter.
-            mStore = new MessageStore(mConv.getThreadId(), mConv.getContact().getName());
-            mStore.bindView(mHistory);
-            mStore.update();
+            convStore = new ConvStore(chatItem.getThreadId());
+//            convStore.bindView(mHistory);
+            convStore.update();
         }
 
         updateTitleBar();
@@ -93,32 +88,32 @@ public class ComposeMessageActivity extends BaseActivity {
                 return;
             mTextEditor.setText("");
 
-            if(mConv == null) {
+            if(chatItem == null) {
                 Contact c = ContactStore.getByNumber(mSubject.getText().toString());
                 long threadId = Telephony.Threads.getOrCreateThreadId(Messola.getContext(), c.getNumber());
-                mConv = new Conversation();
-                mConv.setContact(c);
-                mConv.setThreadId(threadId);
+                chatItem = new Chat();
+                chatItem.setContact(c);
+                chatItem.setThreadId(threadId);
             }
-            sendMessage(mConv, text.toString());
-            if(mStore == null) {
-                mStore = new MessageStore(mConv.getThreadId(), mConv.getContact().getName());
-                mStore.bindView(mHistory);
+            sendMessage(chatItem, text.toString());
+            if(convStore == null) {
+                convStore = new ConvStore(chatItem.getThreadId());
+//                convStore.bindView(mHistory);
             }
-			/*mStore.update();
+			/*convStore.update();
 			updateTitleBar();
 			*/
             Log.d(TAG, "Go to the conversation itself....");
-            startComposing(Messola.getContext(), mConv);
+            startComposing(Messola.getContext(), chatItem);
         }
     }
 
     private void updateTitleBar() {
-        if(mConv == null) {
+        if(chatItem == null) {
             mSubject.setVisibility(View.VISIBLE);
         }
         else {
-            setTitle(mConv.getContact().getFormatted());
+            setTitle(chatItem.getContact().getFormatted());
             mSubject.setVisibility(View.GONE);
         }
     }

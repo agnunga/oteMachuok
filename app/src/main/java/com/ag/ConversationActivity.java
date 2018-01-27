@@ -11,13 +11,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.ag.data.Conv;
 import com.ag.data.Contact;
-import com.ag.data.Conversation;
-import com.ag.data.Message;
-import com.ag.data.MessageStore;
+import com.ag.data.Chat;
+import com.ag.data.ConvStore;
 
-import com.ag.recylcerchat.ConversationRecyclerView;
-import com.ag.utilis.DateUtil;
+import com.ag.recylcerconv.ConversationRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,14 +28,14 @@ public class ConversationActivity extends BaseActivity {
     private ConversationRecyclerView mAdapter;
     private EditText text;
     private Button send;
-    private MessageStore mStore;
-    private Conversation mConv;
-    private ArrayList<Message> mItems;
+    private ConvStore convStore;
+    private Chat chatItem;
+    private ArrayList<Conv> convItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mItems = new ArrayList<>();
+        convItems = new ArrayList<>();
         setContentView(R.layout.activity_conversation);
 
         Intent i = getIntent();
@@ -47,21 +46,21 @@ public class ConversationActivity extends BaseActivity {
             String name = i.getStringExtra("name");
 
             Contact c = new Contact(contactId, name, number, R.drawable.userpic);
-            mConv = new Conversation();
-            mConv.setContact(c);
-            mConv.setThreadId(threadId);
+            chatItem = new Chat();
+            chatItem.setContact(c);
+            chatItem.setThreadId(threadId);
 
-            mStore = new MessageStore(mConv.getThreadId(), mConv.getContact().getName());
-             mStore.update();
-            setupToolbarWithUpNav(R.id.toolbar, mConv.getContact().getName(), R.drawable.ic_action_back);
-            System.out.println("SIZE mItems =============== " + mItems.size());
-            mItems = mStore.getAllMessage();
-            System.out.println("SIZE mItems =============== " + mItems.size());
+            convStore = new ConvStore(chatItem.getThreadId());
+             convStore.update();
+            setupToolbarWithUpNav(R.id.toolbar, chatItem.getContact().getName(), R.drawable.ic_action_back);
+//            System.out.println("SIZE convItems =============== " + convItems.size());
+            convItems = convStore.getAllMessage();
+            System.out.println("SIZE convItems =============== " + convItems.size());
 
             mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
             mRecyclerView.setHasFixedSize(true);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-            mAdapter = new ConversationRecyclerView(this, mItems);
+            mAdapter = new ConversationRecyclerView(this, convItems);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.postDelayed(new Runnable() {
                 @Override
@@ -88,9 +87,9 @@ public class ConversationActivity extends BaseActivity {
                 @Override
                 public void onClick(View view) {
                     if (text.getText().length() > 0){
-                        sendMessage(mConv, text.getText().toString());
-                        List<Message> data = new ArrayList<>();
-                        Message item = new Message();
+                        sendMessage(chatItem, text.getText().toString());
+                        List<Conv> data = new ArrayList<>();
+                        Conv item = new Conv();
                         item.setDate(new Date().getTime());
                         item.setType("2");
                         item.setBody(text.getText().toString());

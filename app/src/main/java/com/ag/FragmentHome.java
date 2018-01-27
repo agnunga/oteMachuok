@@ -4,26 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ag.data.Conversation;
-import com.ag.data.ConversationStore;
+import com.ag.data.Chat;
+import com.ag.data.ChatStore;
 import com.ag.recyclerview.ChatAdapter;
-import com.ag.utilis.CommonUtil;
-import com.ag.utilis.DateUtil;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,7 +29,7 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
     private ChatAdapter mAdapter;
     private TextView tv_selection;
 
-    ConversationStore conversationStore;
+    private ChatStore chatStore;
 
     public FragmentHome(){
         setHasOptionsMenu(true);
@@ -48,7 +42,7 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, null, false);
 
-        conversationStore = new ConversationStore();
+        chatStore = new ChatStore();
 
         getActivity().supportInvalidateOptionsMenu();
         ((MainActivity)getActivity()).changeTitle(R.id.toolbar, "Messages");
@@ -57,8 +51,8 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        List<Conversation> conversations = conversationStore.getAllConversations();
-        mAdapter = new ChatAdapter(getContext(), conversations,this);
+        List<Chat> chats = chatStore.getAllConversations();
+        mAdapter = new ChatAdapter(getContext(), chats,this);
         mRecyclerView.setAdapter (mAdapter);
 
         return view;
@@ -67,10 +61,10 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
     @Override
     public void onItemClicked (int position) {
         startActivity(new Intent(getActivity(), ConversationActivity.class));
-        startComposing(conversationStore.getConversation(position));
+        startComposing(chatStore.getConversation(position));
     }
 
-    private void startComposing(Conversation c) {
+    private void startComposing(Chat c) {
         Intent i = new Intent(getActivity(), ConversationActivity.class);
         if(c != null) {
             Log.d("SimpleSMS", c.toString());

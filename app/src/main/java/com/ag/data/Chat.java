@@ -1,18 +1,25 @@
 package com.ag.data;
 
-import java.util.Date;
-
-public class Conversation {
+public class Chat {
 	private long threadId;
 	private long date;
 	private String msgCount;
 	private long lastMsgId;
-	private String recipient_ids;
-	private String snippet;
-	private String type;
-	private long read;
-	private Contact contact;
+    private String recipient_ids;
+    private String snippet;
+    private String type;
+    private long read;
+    private long unreadCount;
+    private Contact contact;
     private boolean online;
+
+    public long getUnreadCount() {
+        return unreadCount > 0 ? unreadCount : 0;
+    }
+
+    public void setUnreadCount(long unreadCount) {
+        this.unreadCount = unreadCount;
+    }
 
     public boolean isOnline() {
         return online;
@@ -94,7 +101,7 @@ public class Conversation {
         this.contact = contact;
     }
 
-    public Conversation() {
+    public Chat() {
 		/*threadId = -1;
 		date = -1;
 		msgCount = "";
@@ -107,8 +114,8 @@ public class Conversation {
 	
 	@Override
 	public boolean equals(Object o) {
-		if(o instanceof Conversation) {
-			Conversation c = (Conversation) o;
+		if(o instanceof Chat) {
+			Chat c = (Chat) o;
 			return threadId == c.threadId;
 		}
 		return super.equals(o);
@@ -117,7 +124,7 @@ public class Conversation {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("ConversationActivity[");
+		sb.append("Chat[");
 		sb.append("name=" + getContact().getName());
 		sb.append(" thread_id=" + threadId);
 		sb.append(" last_msg=" + lastMsgId);

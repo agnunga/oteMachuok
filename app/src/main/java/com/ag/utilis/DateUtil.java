@@ -84,11 +84,11 @@ public class DateUtil  implements Serializable {
     public static String ago2(Date date1) {
         Date date2 = new Date();
         int day = DifferenceInDays(date1, date2).intValue();
-        if (day <= 1){
+        if (day < 1){
             SimpleDateFormat month_day = new SimpleDateFormat("hh:mm");
             return month_day.format(date1);
         }
-        if (day <= 2){
+        if (day < 2){
             SimpleDateFormat month_day = new SimpleDateFormat("hh:mm");
             return "Yesterday " + month_day.format(date1);
         }
