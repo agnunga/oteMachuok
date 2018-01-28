@@ -1,7 +1,6 @@
 package com.ag;
 
 import android.util.Log;
-
 import java.util.ArrayList;
 
 public class Benchmarker {

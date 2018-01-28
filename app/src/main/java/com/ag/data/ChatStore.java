@@ -5,15 +5,18 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.LayoutInflater;
 
 import com.ag.BaseActivity;
 import com.ag.Benchmarker;
 import com.ag.Messola;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 public class ChatStore {
     private static final String TAG = BaseActivity.TAG + "/ConvStore";
@@ -30,15 +33,15 @@ public class ChatStore {
     private static final Uri URI = Uri.parse("content://mms-sms/conversations?simple=true");
 //	private static final Uri URI = Uri.parse("content://mms-sms/conversations/");
 
-    private ArrayList<Chat> mChats;
-//    private ArrayList<Conv> convs;
+    private List<Chat> mChats;
+    //    private ArrayList<Conv> convs;
     private ContentResolver mResolver;
-//    private LayoutInflater mInflater;
+    //    private LayoutInflater mInflater;
     private Cursor mCursor;
 
     public ChatStore() {
         mResolver = Messola.getContext().getContentResolver();
-        mChats = new ArrayList<Chat>();
+        mChats = new ArrayList<>();
 //        mInflater = LayoutInflater.from(Messola.getContext());
         mCursor = mResolver.query(URI,
                 PROJECTION,
@@ -53,41 +56,42 @@ public class ChatStore {
     public void update() {
         Benchmarker.start("ConvUpdate");
         mChats.clear();
-//        mCursor.requery();
+        mCursor.requery();
         if(mCursor == null || mCursor.getCount() == 0) {
             return;
         }
 
         mCursor.moveToFirst();
         do {
-            Chat conv = new Chat();
-            conv.setThreadId(mCursor.getLong(0));
-            conv.setDate(mCursor.getLong(1));
-            conv.setMsgCount(mCursor.getString(2));
-            conv.setRecipient_ids(mCursor.getString(3));
-            conv.setSnippet(mCursor.getString(4));
-            conv.setRead(mCursor.getInt(5));
-            conv.setType(mCursor.getString(6));
+            Chat chatItem = new Chat();
+            chatItem.setThreadId(mCursor.getLong(0));
+            chatItem.setDate(mCursor.getLong(1));
+            chatItem.setMsgCount(mCursor.getString(2));
+            chatItem.setRecipient_ids(mCursor.getString(3));
+            chatItem.setSnippet(mCursor.getString(4));
+            chatItem.setRead(mCursor.getInt(5));
+            chatItem.setType(mCursor.getString(6));
 
 
-            if(!mChats.contains(conv))
-                mChats.add(conv);
+            if(!mChats.contains(chatItem))
+                mChats.add(chatItem);
+
             int recipient_id = mCursor.getInt(3);
             Contact recipient = ContactStore.getByRecipientId(recipient_id);
-            conv.setContact(recipient);
-            if(conv.getRead() == 0) {
-                conv.setUnreadCount(unreadSms(conv.getContact().getNumber()));
+            chatItem.setContact(recipient);
+            if(chatItem.getRead() == 0) {
+                chatItem.setUnreadCount(unreadSms(chatItem.getContact().getNumber()));
+                Log.d(TAG,  chatItem.getRead() + "\t" +
+                        chatItem.getUnreadCount()+ " / " +chatItem.getMsgCount()+"\t"+
+                        chatItem.getContact().getName()
+                );
             }
-            Log.d(TAG,  conv.getRead() + "\t" +
-                    conv.getUnreadCount()+ " / " +conv.getMsgCount()+"\t"+
-                    conv.getContact().getName()
-            );
-        } while(mCursor.moveToNext());
-        mCursor.close();
+        }while(mCursor.moveToNext());
+//        mCursor.close();
         Benchmarker.stop("ConvUpdate");
     }
 
-    public List<Chat> getAllConversations(){
+    public List<Chat> getAllChats(){
         update();
         return mChats;
     }

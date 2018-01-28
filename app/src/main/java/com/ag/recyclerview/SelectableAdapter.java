@@ -2,7 +2,6 @@ package com.ag.recyclerview;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
-
 import java.util.ArrayList;
 import java.util.List;
 

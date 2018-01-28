@@ -1,10 +1,10 @@
 package com.ag.data;
 
 public class Chat {
-	private long threadId;
-	private long date;
-	private String msgCount;
-	private long lastMsgId;
+    private long threadId;
+    private long date;
+    private String msgCount;
+    private long lastMsgId;
     private String recipient_ids;
     private String snippet;
     private String type;
@@ -110,78 +110,33 @@ public class Chat {
 		snippet = "";
 		lastMsgTime = new Date();
 		contact = null;*/
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if(o instanceof Chat) {
-			Chat c = (Chat) o;
-			return threadId == c.threadId;
-		}
-		return super.equals(o);
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Chat[");
-		sb.append("name=" + getContact().getName());
-		sb.append(" thread_id=" + threadId);
-		sb.append(" last_msg=" + lastMsgId);
-		sb.append(" msg_count=" + msgCount);
-		sb.append(" number=" + getContact().getNumber());
-		sb.append("]");
-		
-		return sb.toString();
-	}
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof Chat) {
+            Chat c = (Chat) o;
+            return threadId == c.threadId;
+        }
+        return super.equals(o);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nChat[");
+        sb.append("\nthreadId | " + threadId);
+        sb.append("\ndate | " + date);
+        sb.append("\nmsgCount | " + msgCount);
+        sb.append("\nlastMsgId | " + lastMsgId);
+        sb.append("\nrecipient_ids | " + recipient_ids);
+        sb.append("\nsnippet | " + snippet);
+        sb.append("\ntype | " + type);
+        sb.append("\nread | " + read);
+        sb.append("\nunreadCount | " + unreadCount);
+        sb.append("\ncontact | " + contact.toString());
+        sb.append("\nonline | " + online);
+        sb.append("\n]");
+        return sb.toString();
+    }
 }
-
-/*
-Contacts DB fields:
-
-times_contacted
-primary_organization
-phonetic_name
-type
-mode
-last_time_contacted
-_sync_time
-_id
-_sync_id
-number_key
-primary_email
-name
-sort_string
-primary_phone
-im_account
-_sync_account
-_sync_version
-send_to_voicemail
-custom_ringtone
-status
-_sync_local_id
-number
-label
-display_name
-_sync_dirty
-im_handle
-starred
-notes
-im_protocol
-
-SMS DB fields:
-
-_id
-thread_id
-address
-person
-date
-protocol
-read
-status
-type
-reply_path_present
-subject
-body
-service_center
-*/

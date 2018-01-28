@@ -133,7 +133,7 @@ public class ContactStore {
     }
 
     private static String resolveNumber(String address) {
-        if(address == null) // Ummm, wtf???
+        if(address == null)
             return null;
 
         address = address.replace("-", "").replace("+", "");

@@ -3,7 +3,6 @@ package com.ag;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,14 +13,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.ag.data.Chat;
-import com.ag.data.ChatStore;
+import com.ag.utilis.TelephonyInfo;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -32,15 +29,9 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class BaseActivity extends AppCompatActivity {
     Toolbar toolbar;
     TextView title;
-    public static String TAG = "Chata";
-    private static Context instance;
+    public static String TAG = "BASE_ACT";
     private ProgressDialog mProgressDialog;
     private static final int PERMISSION_REQUEST_CODE = 1;
-
-    public static ChatStore getConversationStore() {
-        // TODO: Implement it this way.
-        return null;
-    }
 
     public final void changeTitle(int toolbarId, String titlePage){
         toolbar = (Toolbar) findViewById(toolbarId);
@@ -50,6 +41,7 @@ public class BaseActivity extends AppCompatActivity {
         title.setText(titlePage);
         getSupportActionBar().setTitle("");
     }
+
     public final void setupToolbar(int toolbarId, String titlePage){
         toolbar = (Toolbar) findViewById(toolbarId);
         setSupportActionBar(toolbar);
@@ -59,6 +51,7 @@ public class BaseActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("");
     }
+
     public void setupToolbarWithUpNav(int toolbarId, String titlePage, @DrawableRes int res){
         toolbar = (Toolbar) findViewById(toolbarId);
         setSupportActionBar(toolbar);
@@ -70,37 +63,10 @@ public class BaseActivity extends AppCompatActivity {
         getSupportActionBar().setHomeAsUpIndicator(res);
         getSupportActionBar().setTitle("");
     }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
-    public void sendMessage(Chat mConv, String message) {
-        ContentValues values = new ContentValues(7);
-        values.put("address", mConv.getContact().getNumber());
-        values.put("read", false);
-        values.put("subject", "");
-        values.put("body", message);
-        values.put("thread_id", mConv.getThreadId());
-        values.put("type", 2);
-
-        Uri uri = Uri.parse("content://sms/outbox");
-        getContentResolver().insert(uri, values);
-
-        Toast.makeText(Messola.getContext(), "Sending message: " + message, Toast.LENGTH_SHORT).show();
-        // TODO: Handle undelivered messages, etc.
-        try {
-            SmsManager.getDefault().sendTextMessage(mConv.getContact().getNumber(),
-                    null,
-                    message.toString(),
-                    null,
-                    null);
-            Log.d(TAG,"Conv Sent");
-            showToast("Conv Sent");
-        }catch (Exception e){
-            Log.d(TAG, "Conv Sending Failed, Error :  " + e.getMessage());
-            showToast("Sending SMS Failed");
-        }
     }
 
     protected void showProgress(String msg) {
@@ -135,7 +101,6 @@ public class BaseActivity extends AppCompatActivity {
                 }).create().show();
     }
 
-
     public void makeCall(String s, boolean isUssd){
         if(isUssd)
             s = s + Uri.encode("#");
@@ -149,8 +114,8 @@ public class BaseActivity extends AppCompatActivity {
 
     public void requestForCallPermission(){
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.CALL_PHONE)){
-        }
-        else{
+
+        }else{
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CALL_PHONE},PERMISSION_REQUEST_CODE);
         }
     }
@@ -168,8 +133,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public ProgressDialog showProgressDialog(Context context, String message){
-        final ProgressDialog progressDialog = new ProgressDialog(context,
-                R.style.AppTheme);
+        final ProgressDialog progressDialog = new ProgressDialog(context, R.style.AppTheme);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage(message);
         progressDialog.show();
@@ -182,10 +146,10 @@ public class BaseActivity extends AppCompatActivity {
         progressDialog.dismiss();
     }
 
-    public void startComposing(Context context, Chat c) {
+    public void goToConversation(Context context, Chat c) {
         Intent i = new Intent(context, ConversationActivity.class);
         if(c != null) {
-            Log.d("SimpleSMS", c.toString());
+            //Log.d("SimpleSMS", c.toString());
             i.putExtra("thread_id", c.getThreadId());
             i.putExtra("name", c.getContact().getName());
             i.putExtra("number", c.getContact().getNumber());
@@ -193,4 +157,5 @@ public class BaseActivity extends AppCompatActivity {
         }
         startActivity(i);
     }
+
 }

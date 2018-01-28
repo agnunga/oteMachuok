@@ -3,6 +3,7 @@
     package="com.ag">
 
 
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,6 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name=".Messola">
+
+        <service android:enabled="true" android:name=".ResponderService">
+        </service>
+
         <activity
             android:name="com.ag.Splash"
             android:theme="@style/AppThemeFull">
@@ -34,10 +39,6 @@
             android:name="com.ag.ConversationActivity"
             android:parentActivityName="com.ag.MainActivity"
         android:theme="@style/AppTheme.Trans"></activity>
-        <activity
-            android:name="com.ag.ComposeMessageActivity"
-            android:parentActivityName="com.ag.MainActivity"
-        android:theme="@style/AppTheme.Trans"></activity>
     </application>
 
     <uses-permission android:name="android.permission.SEND_SMS"></uses-permission>
@@ -47,5 +48,6 @@
     <uses-permission android:name="android.permission.EDIT_SMS"></uses-permission>
     <uses-permission android:name="android.permission.WRITE_SMS"></uses-permission>
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
 </manifest>

@@ -1,10 +1,10 @@
 package com.ag.data;
 
 public class Conv {
-	public static final String T_INBOUND = "1";
-	public static final String T_OUTBOUND = "2";
-	
-	private int _id;
+    public static final String T_INBOUND = "1";
+    public static final String T_OUTBOUND = "2";
+
+    private int _id;
     private String thread_id;
     private String address;
     private String person;
@@ -13,8 +13,12 @@ public class Conv {
     private String read;
     private String status;
     private String type;
+    private String reply_path_present;
     private String subject;
     private String body;
+    private String service_center;
+    private String sent;
+    private String delivered;
 
     public int get_id() {
         return _id;
@@ -103,4 +107,54 @@ public class Conv {
     public void setBody(String body) {
         this.body = body;
     }
+
+    public String getReply_path_present() {
+        return reply_path_present;
+    }
+
+    public void setReply_path_present(String reply_path_present) {
+        this.reply_path_present = reply_path_present;
+    }
+
+    public String getService_center() {
+        return service_center;
+    }
+
+    public void setService_center(String service_center) {
+        this.service_center = service_center;
+    }
+
+    public String getSent() {
+        return sent;
+    }
+
+    public void setSent(String sent) {
+        this.sent = sent;
+    }
+
+    public String getDelivered() {
+        return delivered;
+    }
+
+    public void setDelivered(String delivered) {
+        this.delivered = delivered;
+    }
 }
+
+/*
+SMS DB fields:
+
+_id
+thread_id
+address
+person
+date
+protocol
+read
+status
+type
+reply_path_present
+subject
+body
+service_center
+*/

@@ -11,10 +11,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.ag.data.Contact;
 import com.ag.recyclerview.ContactAdapter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,13 +23,16 @@ import java.util.List;
 public class FragmentContacts extends Fragment implements ContactAdapter.ViewHolder.ClickListener{
     private RecyclerView mRecyclerView;
     private ContactAdapter mAdapter;
+
     public FragmentContacts(){
         setHasOptionsMenu(true);
     }
+
     public void onCreate(Bundle a){
         super.onCreate(a);
         setHasOptionsMenu(true);
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contacts, null, false);
@@ -47,6 +48,7 @@ public class FragmentContacts extends Fragment implements ContactAdapter.ViewHol
 
         return view;
     }
+
     public List<Contact> setData(){
         List<Contact> data = new ArrayList<>();
         String name[]= {"Laura Owens", "Angela Price", "Donald Turner", "Kelly", "Julia Harris", "Laura Owens", "Angela Price", "Donald Turner", "Kelly", "Julia Harris" };

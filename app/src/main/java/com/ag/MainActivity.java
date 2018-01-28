@@ -1,20 +1,25 @@
 package com.ag;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
-import android.util.Log;
-import android.view.Gravity;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.ag.utilis.TelephonyInfo;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     TextView chats;
@@ -23,11 +28,41 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (ActivityCompat.checkSelfPermission(Messola.getContext(), Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         setContentView(R.layout.activity_main);
+
+        System.out.println("DUAL SIM MANENOS!!!");
+
+        TelephonyInfo.dualSimManenos();
 
         setupToolbar(R.id.toolbar, "Messages");
 
         FragmentTransaction ft;
+
+        Intent i = getIntent();
+        if(i.hasExtra("frgToLoad")) {
+            System.out.println("HAS FRAGMENT TO LOAD.....");
+            int intentFragment = i.getExtras().getInt("frgToLoad");
+            switch (intentFragment) {
+                case 1: {
+                    FragmentHome fragmentHome = new FragmentHome();
+                    ft = getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.frameLayout, fragmentHome).commit();
+                    break;
+                }
+            }
+        }
+
         FragmentHome fragmentHome = new FragmentHome();
         ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.frameLayout, fragmentHome).commit();
@@ -49,6 +84,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 findItem(R.id.nav_chats));
         initializeCountDrawer();
 
+        try {
+
+            // Start service
+            Intent svc = new Intent(this, ResponderService.class);
+            startService(svc);
+        }
+        catch (Exception e) {
+            Log.e("onCreate", "service creation problem", e);
+        }
+
+
     }
 
     private void initializeCountDrawer(){
@@ -69,28 +115,32 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+            finish();
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+/*
         Log.i("OLOO", "\n\n\n\n===Selected "+item.getItemId()+
                 "=== home = " + android.R.id.home +
                 "=== menu_edit " + R.menu.menu_edit +
                 "=== R.id.new_chat " + R.id.new_chat +
                 "=== R.menu.menu_add " + R.menu.menu_add +
                 "\n\n\n\n\n");
+*/
 
         switch (item.getItemId()) {
             case android.R.id.home: {
                 Log.i(TAG, "\n\n\n\n===home===\n\n\n\n\n");
                 drawer.openDrawer(GravityCompat.START);  // OPEN DRAWER
                 return true;
-            }case R.menu.menu_edit : {
-                Log.i(TAG, "\n\n\n\n===Create new messo===\n\n\n\n\n");
-                Intent i = new Intent(Messola.getContext(), ComposeMessageActivity.class);
-                startActivity(i);
             }case R.id.new_chat : {
+                Log.i(TAG, "\n\n\n\n===Create new messo===\n\n\n\n\n");
+//                Intent i = new Intent(Messola.getContext(), ComposeMessageActivity.class);
+                Intent i = new Intent(Messola.getContext(), ConversationActivity.class);
+                startActivity(i);
+            }/*case R.menu.menu_edit : {
                 Log.i(TAG, "\n\n\n\n===Create new messo===\n\n\n\n\n");
                 Intent i = new Intent(Messola.getContext(), ComposeMessageActivity.class);
                 startActivity(i);
@@ -98,7 +148,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 Log.i(TAG, "\n\n\n\n===Create new messo===\n\n\n\n\n");
                 Intent i = new Intent(Messola.getContext(), ComposeMessageActivity.class);
                 startActivity(i);
-            }
+            }*/
         }
         return super.onOptionsItemSelected(item);
     }

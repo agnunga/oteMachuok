@@ -5,12 +5,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-
 import com.ag.R;
 import com.ag.data.Conv;
 import com.ag.utilis.DateUtil;
-
 import java.util.Date;
 import java.util.List;
 

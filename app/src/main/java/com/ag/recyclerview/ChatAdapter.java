@@ -28,8 +28,6 @@ public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
     private Context mContext;
     private ViewHolder.ClickListener clickListener;
 
-
-
     public ChatAdapter (Context context, List<Chat> arrayList, ViewHolder.ClickListener clickListener) {
         this.chatList = arrayList;
         this.mContext = context;
@@ -70,12 +68,17 @@ public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
         viewHolder.tvLastChat.setText(chatList.get(position).getSnippet());
         viewHolder.tvLastChat.setText(chatList.get(position).getSnippet());
 //        viewHolder.tvCount.setText(CommonUtil.cutCount(chatList.get(position).getMsgCount()));
+
+        if(chatList.get(position).getRead() == 1){
+            viewHolder.tvName.setTextColor(mContext.getResources().getColor(R.color.colorTextBlack));
+        }else {
+            viewHolder.tvName.setTextColor(mContext.getResources().getColor(R.color.colorAccent));
+        }
+
         long unreadCount  = chatList.get(position).getUnreadCount();
         if (unreadCount > 0) {
             viewHolder.tvCount.setText(CommonUtil.cutCount(unreadCount));
-            viewHolder.tvName.setTextColor(mContext.getResources().getColor(R.color.colorAccent));
         }else {
-            viewHolder.tvName.setTextColor(mContext.getResources().getColor(R.color.colorTextBlack));
             viewHolder.tvCount.setVisibility(View.INVISIBLE);
         }
     }
@@ -97,7 +100,6 @@ public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
         public CheckBox checked;
         private ClickListener listener;
         //private final View selectedOverlay;
-
 
         public ViewHolder(View itemLayoutView,ClickListener listener) {
             super(itemLayoutView);

@@ -13,6 +13,7 @@ import android.widget.ListView;
 import com.ag.Messola;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ConvStore {
     private static final Uri URI = Uri.parse("content://sms/");
@@ -32,12 +33,12 @@ public class ConvStore {
 
     private Context mContext;
     private ContentResolver mResolver;
-//    private String mName;
+    //    private String mName;
     private long mThreadId;
-//    private Adapter mAdapter;
+    //    private Adapter mAdapter;
     private ListView mListView;
 
-    private ArrayList<Conv> mItems;
+    private List<Conv> convList;
     private Cursor mCursor;
 
     public ConvStore(long threadId) {
@@ -45,7 +46,7 @@ public class ConvStore {
         mResolver = mContext.getContentResolver();
 //        mName = name;
         mThreadId = threadId;
-        mItems = new ArrayList<Conv>(50);
+        convList = new ArrayList<Conv>(50);
 //        mAdapter = new Adapter();
         // TODO: Make this query faster.
         mCursor = mResolver.query(URI,
@@ -63,29 +64,32 @@ public class ConvStore {
     }*/
 
     public void update() {
-        mCursor.requery();
-        mItems.clear();
-
+//        mCursor.requery();
+        convList.clear();
         mCursor.moveToFirst();
+        int i= 0;
         do {
-            Conv m = new Conv();
+//            System.out.println("I PASSED HERE ++++ " + i++);
+            Conv conv = new Conv();
+            conv.set_id(mCursor.getInt(0));
+            conv.setThread_id(mCursor.getString(1));
+            conv.setAddress(mCursor.getString(2));
+            conv.setPerson(mCursor.getString(3));
+            conv.setDate(mCursor.getLong(4));
+            conv.setProtocol(mCursor.getString(5));
+            conv.setRead(mCursor.getString(6));
+            conv.setStatus(mCursor.getString(7));
+            conv.setType(mCursor.getString(8));
+            conv.setSubject(mCursor.getString(9));
+            conv.setBody(mCursor.getString(10));
 
-            m.set_id(mCursor.getInt(0));
-            m.setThread_id(mCursor.getString(1));
-            m.setAddress(mCursor.getString(2));
-            m.setPerson(mCursor.getString(3));
-            m.setDate(mCursor.getLong(4));
-            m.setProtocol(mCursor.getString(5));
-            m.setRead(mCursor.getString(6));
-            m.setStatus(mCursor.getString(7));
-            m.setType(mCursor.getString(8));
-            m.setSubject(mCursor.getString(9));
-            m.setBody(mCursor.getString(10));
+//            convList.add(conv);
+            if(!convList.contains(conv))
+                convList.add(conv);
 
-            mItems.add(m);
         } while(mCursor.moveToNext());
         markThreadRead();
-        mCursor.close();
+//        mCursor.close();
     }
 
     private void markThreadRead() {
@@ -100,8 +104,9 @@ public class ConvStore {
         );
     }
 
-    public ArrayList<Conv> getAllMessage() {
-        return mItems;
+    public List<Conv> getAllConvs() {
+        update();
+        return convList;
     }
 
     private class ChangeObserver extends ContentObserver {
@@ -111,7 +116,7 @@ public class ConvStore {
 
         @Override
         public void onChange(boolean selfChange) {
-            update();
+//            update();
         }
     }
 }

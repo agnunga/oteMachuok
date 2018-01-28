@@ -43,6 +43,7 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
         View view = inflater.inflate(R.layout.fragment_home, null, false);
 
         chatStore = new ChatStore();
+        List<Chat> chats = chatStore.getAllChats();
 
         getActivity().supportInvalidateOptionsMenu();
         ((MainActivity)getActivity()).changeTitle(R.id.toolbar, "Messages");
@@ -51,7 +52,6 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        List<Chat> chats = chatStore.getAllConversations();
         mAdapter = new ChatAdapter(getContext(), chats,this);
         mRecyclerView.setAdapter (mAdapter);
 
@@ -67,7 +67,7 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
     private void startComposing(Chat c) {
         Intent i = new Intent(getActivity(), ConversationActivity.class);
         if(c != null) {
-            Log.d("SimpleSMS", c.toString());
+            //Log.d("SimpleSMS", c.toString());
             i.putExtra("thread_id", c.getThreadId());
             i.putExtra("name", c.getContact().getName());
             i.putExtra("number", c.getContact().getNumber());
@@ -109,22 +109,5 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
         menu.clear();
         inflater.inflate(R.menu.menu_edit, menu);
     }
-/*
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.i("OLOO", "\n\n\n\n===Selected X "+item.getItemId()+"===\n\n\n\n\n");
-
-        switch (item.getItemId()) {
-            case R.menu.menu_edit : {
-                Log.i("OLOO", "\n\n\n\n===Create new messo===\n\n\n\n\n");
-                Intent i = new Intent(getContext(), ComposeMessageActivity.class);
-                startActivity(i);
-                return true;
-            }
-        }
-        return false;
-    }
-*/
 
 }
