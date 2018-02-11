@@ -21,9 +21,9 @@
         android:layout_marginRight="@dimen/space10">
         <ImageView
             android:id="@+id/iv_user_photo"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/userpic"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/img"/>
         <TextView
             android:id="@+id/tv_unread_count"
             android:layout_width="22dp"

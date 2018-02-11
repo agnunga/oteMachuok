@@ -2,14 +2,18 @@ package com.ag;
 
 import com.ag.data.Chat;
 import com.ag.data.ChatStore;
+import com.ag.utilis.SimUtil;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.app.ActionBar;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.Window;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -36,7 +40,7 @@ public class Messola extends android.app.Application {
         return null;
     }
 
-    public static void sendSMS(String reply, String requester) throws Exception{
+    public static boolean sendSMS(String reply, String requester) throws Exception{
         Log.v(Messola.TAG,"Sending SMS to " + requester);
 
         SmsManager smsManager = SmsManager.getDefault();
@@ -53,8 +57,17 @@ public class Messola extends android.app.Application {
             sentIns.add(sentPendingIntent);
             deliverIns.add(deliverPIn);
         }
-
-        smsManager.sendMultipartTextMessage(requester, null, msgPieces, sentIns, deliverIns);
+        return SimUtil.sendMultipartTextSMS(
+                getContext(),
+                1,
+                requester,
+                null,
+                msgPieces,
+                sentIns,
+                deliverIns
+        );
+//        smsManager.sendMultipartTextMessage(requester, null, msgPieces, sentIns, deliverIns);
+//        return true;
     }
 
     public static boolean sendMessage2(String recipient, String message) {
@@ -86,5 +99,24 @@ public class Messola extends android.app.Application {
     public static void showToast(String msg) {
         Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
     }
+    public static void testa(String msg) {
+//        Truecaller
+    }
+
+
+    public static ProgressDialog showProgressDialog(String message) {
+        final ProgressDialog progressDialog = new ProgressDialog(getContext(), R.style.AppTheme);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage(message);
+        progressDialog.show();
+        Window window = progressDialog.getWindow();
+        window.setLayout(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+        return progressDialog;
+    }
+
+    public void dismissProgressDialog(ProgressDialog progressDialog) {
+        progressDialog.dismiss();
+    }
+
 
 }

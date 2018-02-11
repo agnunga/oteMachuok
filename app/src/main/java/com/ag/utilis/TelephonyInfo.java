@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
 import com.ag.Messola;
 
 public final class TelephonyInfo {
@@ -59,6 +60,7 @@ public final class TelephonyInfo {
     public static TelephonyInfo getInstance(Context context) {
 
         if (telephonyInfo == null) {
+
             telephonyInfo = new TelephonyInfo();
 
             TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
@@ -71,45 +73,61 @@ public final class TelephonyInfo {
                 //                                          int[] grantResults)
                 // to handle the case where the user grants the permission. See the documentation
                 // for ActivityCompat#requestPermissions for more details.
-                return null;
+//                return TODO;
+            }
+            telephonyInfo.imeiSIM1 = telephonyManager.getDeviceId();
+            telephonyInfo.imeiSIM2 = telephonyManager.getDeviceId();
+
+            try {
+                telephonyInfo.imeiSIM1 = getDeviceIdBySlot(context, "getDeviceId", 0);
+                telephonyInfo.imeiSIM2 = getDeviceIdBySlot(context, "getDeviceId", 1);
+
+            } catch (GeminiMethodNotFoundException e) {
+                e.printStackTrace();
+
+                try {
+                    telephonyInfo.imeiSIM1 = getDeviceIdBySlot(context, "getDeviceIdGemini", 0);
+                    telephonyInfo.imeiSIM2 = getDeviceIdBySlot(context, "getDeviceIdGemini", 1);
+                } catch (GeminiMethodNotFoundException e1) {
+                    //Call here for next manufacturer's predicted method name if you wish
+                    e1.printStackTrace();
+                }
             }
 
-            telephonyInfo.imeiSIM1 = telephonyManager.getDeviceId();
-            telephonyInfo.imeiSIM2 = null;
             telephonyInfo.isSIM1Ready = telephonyManager.getSimState() == TelephonyManager.SIM_STATE_READY;
             telephonyInfo.isSIM2Ready = false;
 
-            String[] simStatusMethodNames =
-                    {
-                            "getSimState",
-                            "getDeviceIdGemini",
-                            "getDeviceIdDs",
-                            "getSimStateGemini",
-                            "getSimSerialNumberGemini"
-                    };
+            try {
+                telephonyInfo.isSIM1Ready = getSIMStateBySlot(context, "getSimStateGemini", 0);
+                telephonyInfo.isSIM2Ready = getSIMStateBySlot(context, "getSimStateGemini", 1);
+            } catch (GeminiMethodNotFoundException e) {
 
-            for (String methodName : simStatusMethodNames) {
+                e.printStackTrace();
+
                 try {
-                    telephonyInfo.isSIM1Ready = getSIMStateBySlot(context, methodName, 0);
-                    telephonyInfo.isSIM2Ready = getSIMStateBySlot(context, methodName, 1);
-                    break;
-                } catch (GeminiMethodNotFoundException e0) {
-                    e0.printStackTrace();
+                    telephonyInfo.isSIM1Ready = getSIMStateBySlot(context, "getSimState", 0);
+                    telephonyInfo.isSIM2Ready = getSIMStateBySlot(context, "getSimState", 1);
+                } catch (GeminiMethodNotFoundException e1) {
+                    //Call here for next manufacturer's predicted method name if you wish
+                    e1.printStackTrace();
                 }
             }
         }
+
         return telephonyInfo;
     }
 
     private static String getDeviceIdBySlot(Context context, String predictedMethodName, int slotID) throws GeminiMethodNotFoundException {
 
         String imei = null;
+
         TelephonyManager telephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
         try{
-            Class<?> telephonyClass = Class.forName(telephony.getClass().getName());
-            Class<?>[] parameter = new Class[1];
 
+            Class<?> telephonyClass = Class.forName(telephony.getClass().getName());
+
+            Class<?>[] parameter = new Class[1];
             parameter[0] = int.class;
             Method getSimID = telephonyClass.getMethod(predictedMethodName, parameter);
 
@@ -119,23 +137,27 @@ public final class TelephonyInfo {
 
             if(ob_phone != null){
                 imei = ob_phone.toString();
+
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw new GeminiMethodNotFoundException(predictedMethodName);
         }
+
         return imei;
     }
 
     private static  boolean getSIMStateBySlot(Context context, String predictedMethodName, int slotID) throws GeminiMethodNotFoundException {
 
         boolean isReady = false;
+
         TelephonyManager telephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
         try{
-            Class<?> telephonyClass = Class.forName(telephony.getClass().getName());
-            Class<?>[] parameter = new Class[1];
 
+            Class<?> telephonyClass = Class.forName(telephony.getClass().getName());
+
+            Class<?>[] parameter = new Class[1];
             parameter[0] = int.class;
             Method getSimStateGemini = telephonyClass.getMethod(predictedMethodName, parameter);
 
@@ -153,8 +175,28 @@ public final class TelephonyInfo {
             e.printStackTrace();
             throw new GeminiMethodNotFoundException(predictedMethodName);
         }
+
         return isReady;
     }
+
+    public static void dualSimManenos() {
+        TelephonyInfo telephonyInfo = TelephonyInfo.getInstance(Messola.getContext());
+
+        String imeiSIM1 = telephonyInfo.getImsiSIM1();
+        String imeiSIM2 = telephonyInfo.getImsiSIM2();
+
+        boolean isSIM1Ready = telephonyInfo.isSIM1Ready();
+        boolean isSIM2Ready = telephonyInfo.isSIM2Ready();
+
+        boolean isDualSIM = telephonyInfo.isDualSIM();
+
+        Log.i("TELEPHONY INFO", " IME1 : " + imeiSIM1 + "\n" +
+                " IME2 : " + imeiSIM2 + "\n" +
+                " IS DUAL SIM : " + isDualSIM + "\n" +
+                " IS SIM1 READY : " + isSIM1Ready + "\n" +
+                " IS SIM2 READY : " + isSIM2Ready + "\n");
+    }
+
 
     private static class GeminiMethodNotFoundException extends Exception {
 
@@ -162,44 +204,6 @@ public final class TelephonyInfo {
 
         public GeminiMethodNotFoundException(String info) {
             super(info);
-            printTelephonyManagerMethodNamesForThisDevice(Messola.getContext());
         }
     }
-
-    public static void printTelephonyManagerMethodNamesForThisDevice(Context context) {
-
-        TelephonyManager telephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        Class<?> telephonyClass;
-
-        try {
-            telephonyClass = Class.forName(telephony.getClass().getName());
-            Method[] methods = telephonyClass.getMethods();
-            for (int idx = 0; idx < methods.length; idx++) {
-                System.out.println("\n" + methods[idx] + " declared by " + methods[idx].getDeclaringClass());
-            }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void dualSimManenos() {
-        TelephonyInfo telephonyInfo = TelephonyInfo.getInstance(Messola.getContext());
-
-        if (telephonyInfo != null) {
-            String imeiSIM1 = telephonyInfo.getImsiSIM1();
-            String imeiSIM2 = telephonyInfo.getImsiSIM2();
-            boolean isSIM1Ready = telephonyInfo.isSIM1Ready();
-            boolean isSIM2Ready = telephonyInfo.isSIM2Ready();
-            boolean isDualSIM = telephonyInfo.isDualSIM();
-
-            Log.d(Messola.TAG, " IME1 : " + imeiSIM1 + "\n" +
-                    " IME2 : " + imeiSIM2 + "\n" +
-                    " IS DUAL SIM : " + isDualSIM + "\n" +
-                    " IS SIM1 READY : " + isSIM1Ready + "\n" +
-                    " IS SIM2 READY : " + isSIM2Ready + "\n");
-        }else{
-            Log.d(Messola.TAG,  "PERMISSION DENNIED ::::: android.permission.READ_PHONE_STATE");
-        }
-    }
-
 }

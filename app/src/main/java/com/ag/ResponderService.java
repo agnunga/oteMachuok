@@ -155,11 +155,12 @@ public class ResponderService extends Service {
     }*/
 
     public void respond() {
-        try {
-            Messola.sendSMS("Thank you for reaching out, I will get back to you.", requester);
-        }catch (Exception e){
-
-        }
+        Log.i(Messola.TAG, "RESPONSE DISANLED! Thank you for reaching out, I will get back to you(" + requester + ")");
+//        try {
+//            Messola.sendSMS("Thank you for reaching out, I will get back to you.", requester);
+//        }catch (Exception e){
+//
+//        }
     }
 
     @Override

@@ -1,11 +1,13 @@
 package com.ag;
 
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,7 +30,7 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
     private RecyclerView mRecyclerView;
     private ChatAdapter mAdapter;
     private TextView tv_selection;
-
+    ChoosePlanView choosePlanView;
     private ChatStore chatStore;
 
     public FragmentHome(){
@@ -42,6 +44,7 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, null, false);
 
+        choosePlanView = new ChoosePlanView(getContext());
         chatStore = new ChatStore();
         List<Chat> chats = chatStore.getAllChats();
 
@@ -50,8 +53,67 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
 
         tv_selection = (TextView) view.findViewById(R.id.tv_selection);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT,  ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+
+            @Override
+            public void onChildDraw(Canvas canvas, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                View itemView = viewHolder.itemView;
+
+                if(dX < 0){
+                    choosePlanView.invalidate();
+//                    choosePlanView.setBackgroundResource(R.color.delete_red);
+                    choosePlanView.measure(itemView.getWidth(), itemView.getHeight());
+                    choosePlanView.layout(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                    canvas.save();
+                    canvas.translate(choosePlanView.getRight() + (int) dX, viewHolder.getAdapterPosition()*itemView.getHeight());
+
+                    choosePlanView.draw(canvas);
+                    canvas.restore();
+                }else {
+
+                    choosePlanView.invalidate();
+//                    choosePlanView.setBackgroundResource(R.color.delete_red);
+                    choosePlanView.measure(itemView.getWidth(), itemView.getHeight());
+                    choosePlanView.layout(itemView.getLeft() + (int) dX, itemView.getTop(), itemView.getLeft(), itemView.getBottom());
+                    canvas.save();
+                    canvas.translate(choosePlanView.getLeft() + (int) dX, viewHolder.getAdapterPosition()*itemView.getHeight());
+
+                    choosePlanView.draw(canvas);
+                    canvas.restore();
+                }
+
+                super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                Messola.showToast("On Move");
+                return false;
+            }
+
+            /*@Override
+            public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+//                super.clearView(recyclerView, viewHolder);
+                Messola.showToast("On Clear");
+            }*/
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                if (direction == ItemTouchHelper.RIGHT) {
+                    Messola.showToast("On Swipe Right");
+
+                }else if (direction == ItemTouchHelper.LEFT) {
+                    Messola.showToast("On Swipe Left");
+
+                }
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+
         mAdapter = new ChatAdapter(getContext(), chats,this);
         mRecyclerView.setAdapter (mAdapter);
 

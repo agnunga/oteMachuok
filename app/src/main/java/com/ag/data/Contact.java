@@ -5,6 +5,8 @@ public class Contact {
     private String name;
     private String number;
     private int image;
+    private String photoUri;
+    private String thumbNailUri;
 
     public long getId() {
         return id;
@@ -36,6 +38,22 @@ public class Contact {
 
     public void setImage(int image) {
         this.image = image;
+    }
+
+    public String getPhotoUri() {
+        return photoUri;
+    }
+
+    public void setPhotoUri(String photoUri) {
+        this.photoUri = photoUri;
+    }
+
+    public String getThumbNailUri() {
+        return thumbNailUri;
+    }
+
+    public void setThumbNailUri(String thumbNailUri) {
+        this.thumbNailUri = thumbNailUri;
     }
 
     public Contact(){

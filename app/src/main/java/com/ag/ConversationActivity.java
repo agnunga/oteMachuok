@@ -80,7 +80,7 @@ public class ConversationActivity extends BaseActivity {
                 public void run() {
                     mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() -1);
                 }
-            }, 500);
+            }, 0);
 
             newSmsEt = (EditText) findViewById(R.id.et_message);
             newSmsEt.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +91,7 @@ public class ConversationActivity extends BaseActivity {
                         public void run() {
                             mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
                         }
-                    }, 500);
+                    }, 0);
                 }
             });
             send = (Button) findViewById(R.id.bt_send);
@@ -103,6 +103,7 @@ public class ConversationActivity extends BaseActivity {
                 public void onClick(View view) {
                     if (newSmsEt.getText().length() > 0){
                         //Send and save sms
+                        /*selectSim(final_number);*/
                         Messola.sendMessage2(final_number, newSmsEt.getText().toString());
                         List<Conv> convList = new ArrayList<>();
                         Conv convItem = new Conv();

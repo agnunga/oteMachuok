@@ -4,13 +4,13 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.provider.ContactsContract.PhoneLookup;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-
-import com.ag.BaseActivity;
 import com.ag.Messola;
 import com.ag.R;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,22 +18,70 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-
-//import android.provider.Contacts.People;
+import java.util.List;
 
 public class ContactStore {
-    private static Context sContext;
-    private static ContentResolver sResolver;
-    private static HashMap<Long, Contact> sContacts;
+    private static Context sContext = Messola.getContext();
+    private static ContentResolver sResolver = sContext.getContentResolver();
+    private static HashMap<Long, Contact> sContacts = new HashMap<Long, Contact>();
+    private static List contacts;
 
     private static final String CACHE_FILE_NAME = "ContactsCache.txt";
     private static final String TAG = "ContactStore";
 
-    static {
-        sContext = Messola.getContext();
-        sResolver = sContext.getContentResolver();
-        sContacts = new HashMap<Long, Contact>(20);
+    private ContentResolver cr ;
+    private Cursor cur;
+
+    public ContactStore() {
+        contacts = new ArrayList();
+
+        cr = Messola.getContext().getContentResolver();
+        cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
+                null, null, null, "upper("+ContactsContract.Contacts.DISPLAY_NAME + ") ASC");
+
+    }
+
+    public List<Contact> getContactList() {
+        update();
+        return contacts;
+    }
+
+    public void update() {
+        if ((cur != null ? cur.getCount() : 0) > 0) {
+            while (cur != null && cur.moveToNext()) {
+                String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+                String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                String thumbNailUri = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI));
+                String photoUri = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
+                String number = "";
+
+                if (cur.getInt(cur.getColumnIndex( ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+                    Cursor pCur = cr.query(
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                            null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                            new String[]{id}, null);
+                    int i = 0;
+                    while (pCur.moveToNext()) {
+                        i++;
+                        number = pCur.getString(pCur.getColumnIndex(
+                                ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        Log.i(TAG, "Name: " + name);
+                        Log.i(TAG, "Phone Number: " + number);
+                    }
+                    contacts.add(new Contact(Long.parseLong(id), name, number, R.drawable.userpic));
+                    Log.i(TAG, "\n\nTotal contacts : " + i + "\n\n");
+                    pCur.close();
+                }
+            }
+        }
+        if(cur!=null){
+            cur.close();
+        }
     }
 
     public static Contact getByNumber(String number) {
@@ -136,17 +184,16 @@ public class ContactStore {
         if(address == null)
             return null;
 
-        address = address.replace("-", "").replace("+", "");
+        /*address = address.replace("-", "").replace("+", "");
         if(address.charAt(0) == '1')
-            address = address.substring(1);
+           address = address.substring(1); */
 
         String address_key = "";
         for(int i = address.length() - 1; i >= 0; i--) {
             address_key += address.charAt(i);
         }
 
-        Uri lookup = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI,
-                Uri.encode(address));
+        Uri lookup = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(address));
         Cursor c = sResolver.query(lookup,
                 new String[] { PhoneLookup.DISPLAY_NAME, PhoneLookup.NUMBER },
                 null,
@@ -165,4 +212,6 @@ public class ContactStore {
 
         return name;
     }
+
+
 }
