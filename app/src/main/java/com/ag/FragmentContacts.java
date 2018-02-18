@@ -1,7 +1,7 @@
 package com.ag;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,7 +17,10 @@ import com.ag.data.ContactStore;
 import com.ag.recyclerview.ContactAdapter;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Ag.
@@ -26,7 +29,7 @@ import java.util.List;
 public class FragmentContacts extends Fragment implements ContactAdapter.ViewHolder.ClickListener{
     private RecyclerView mRecyclerView;
     private ContactAdapter mAdapter;
-    private List contacts;
+    private List<Contact> contacts;
     private ContactStore contactStore;
 
     public FragmentContacts(){
@@ -48,9 +51,12 @@ public class FragmentContacts extends Fragment implements ContactAdapter.ViewHol
         getActivity().supportInvalidateOptionsMenu();
         ((MainActivity)getActivity()).changeTitle(R.id.toolbar, "Contacts");
 
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        //linearLayoutManager.setReverseLayout(true);
         mAdapter = new ContactAdapter(getContext(), contacts,this);
         mRecyclerView.setAdapter (mAdapter);
 
@@ -59,8 +65,26 @@ public class FragmentContacts extends Fragment implements ContactAdapter.ViewHol
 
     @Override
     public void onItemClicked (int position) {
-
+        Contact contact = contacts.get(position);
+        Log.i(Messola.TAG, "Contact ::: " + contact.toString());
+        sctartConversationActivity(contact);
     }
+
+    public void sctartConversationActivity (Contact c) {
+        Intent i = new Intent(getActivity(), ConversationActivity.class);
+        if(c != null) {
+            //Log.d("SimpleSMS", c.toString());
+            Set<String> numbers = contactStore.findNumbersById(c.getId());
+            Iterator<String> iterator = numbers.iterator();
+            while (iterator.hasNext()){
+                i.putExtra("number", iterator.next());
+            }
+            i.putExtra("name", c.getName());
+            i.putExtra("contact_id", c.getId());
+        }
+        startActivity(i);
+    }
+
 
     @Override
     public boolean onItemLongClicked (int position) {

@@ -7,10 +7,11 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.ListView;
 
 import com.ag.Messola;
+import com.ag.recyclerview.SelectableAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,22 +34,21 @@ public class ConvStore {
 
     private Context mContext;
     private ContentResolver mResolver;
-    //    private String mName;
     private long mThreadId;
-    //    private Adapter mAdapter;
-    private ListView mListView;
+    private SelectableAdapter mAdapter;
+    private RecyclerView recyclerView;
 
     private List<Conv> convList;
     private Cursor mCursor;
 
-    public ConvStore(long threadId) {
+    public ConvStore(long id) {
         mContext = Messola.getContext();
         mResolver = mContext.getContentResolver();
 //        mName = name;
-        mThreadId = threadId;
         convList = new ArrayList<Conv>(50);
 //        mAdapter = new Adapter();
         // TODO: Make this query faster.
+        mThreadId = id;
         mCursor = mResolver.query(URI,
                 PROJECTION,
                 "thread_id=" + mThreadId,
@@ -58,41 +58,57 @@ public class ConvStore {
         mCursor.registerContentObserver(new ChangeObserver());
     }
 
-    /*public void bindView(ListView lv) {
-        mListView = lv;
+    public ConvStore(String address) {
+        mContext = Messola.getContext();
+        mResolver = mContext.getContentResolver();
+        convList = new ArrayList<Conv>(50);
+        // TODO: Make this query faster.
+        mCursor = mResolver.query(URI,
+                PROJECTION,
+                "address='" + address + "'",
+                null,
+                "date ASC"
+        );
+        mCursor.registerContentObserver(new ChangeObserver());
+    }
+
+    public void bindView(RecyclerView lv) {
+        recyclerView = lv;
         lv.setAdapter(mAdapter);
-    }*/
+    }
 
     public void update() {
-//        mCursor.requery();
+        mCursor.requery();
         convList.clear();
         mCursor.moveToFirst();
         int i= 0;
-        do {
-//            System.out.println("I PASSED HERE ++++ " + i++);
-            Conv conv = new Conv();
-            conv.set_id(mCursor.getInt(0));
-            conv.setThread_id(mCursor.getString(1));
-            conv.setAddress(mCursor.getString(2));
-            conv.setPerson(mCursor.getString(3));
-            conv.setDate(mCursor.getLong(4));
-            conv.setProtocol(mCursor.getString(5));
-            conv.setRead(mCursor.getString(6));
-            conv.setStatus(mCursor.getString(7));
-            conv.setType(mCursor.getString(8));
-            conv.setSubject(mCursor.getString(9));
-            conv.setBody(mCursor.getString(10));
+        try {
+            do {
+                Conv conv = new Conv();
+                conv.set_id(mCursor.getInt(0));
+                conv.setThread_id(mCursor.getLong(1));
+                conv.setAddress(mCursor.getString(2));
+                conv.setPerson(mCursor.getString(3));
+                conv.setDate(mCursor.getLong(4));
+                conv.setProtocol(mCursor.getString(5));
+                conv.setRead(mCursor.getString(6));
+                conv.setStatus(mCursor.getString(7));
+                conv.setType(mCursor.getString(8));
+                conv.setSubject(mCursor.getString(9));
+                conv.setBody(mCursor.getString(10));
 
-//            convList.add(conv);
-            if(!convList.contains(conv))
-                convList.add(conv);
-
-        } while(mCursor.moveToNext());
-        markThreadRead();
+                if (!convList.contains(conv))
+                    convList.add(conv);
+                if (conv.getRead().equals(0))
+                    markThreadRead(conv.getThread_id());
+            } while (mCursor.moveToNext());
 //        mCursor.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
-    private void markThreadRead() {
+    private void markThreadRead(Long mThreadId) {
         Log.d("READ", "Marking conv as read");
         ContentValues cv = new ContentValues(1);
         cv.put("read", 1);
@@ -116,7 +132,7 @@ public class ConvStore {
 
         @Override
         public void onChange(boolean selfChange) {
-//            update();
+            update();
         }
     }
 }

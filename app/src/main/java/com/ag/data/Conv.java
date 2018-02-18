@@ -5,7 +5,7 @@ public class Conv {
     public static final String T_OUTBOUND = "2";
 
     private int _id;
-    private String thread_id;
+    private Long thread_id;
     private String address;
     private String person;
     private long date;
@@ -28,11 +28,11 @@ public class Conv {
         this._id = _id;
     }
 
-    public String getThread_id() {
+    public Long getThread_id() {
         return thread_id;
     }
 
-    public void setThread_id(String thread_id) {
+    public void setThread_id(Long thread_id) {
         this.thread_id = thread_id;
     }
 

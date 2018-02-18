@@ -22,13 +22,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class ContactStore {
     private static Context sContext = Messola.getContext();
     private static ContentResolver sResolver = sContext.getContentResolver();
-    private static HashMap<Long, Contact> sContacts = new HashMap<Long, Contact>();
-    private static List contacts;
+    private static List<Contact> sContacts = new ArrayList<>();
 
     private static final String CACHE_FILE_NAME = "ContactsCache.txt";
     private static final String TAG = "ContactStore";
@@ -37,8 +41,6 @@ public class ContactStore {
     private Cursor cur;
 
     public ContactStore() {
-        contacts = new ArrayList();
-
         cr = Messola.getContext().getContentResolver();
         cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, "upper("+ContactsContract.Contacts.DISPLAY_NAME + ") ASC");
@@ -47,57 +49,60 @@ public class ContactStore {
 
     public List<Contact> getContactList() {
         update();
-        return contacts;
+        return sContacts;
     }
 
     public void update() {
         if ((cur != null ? cur.getCount() : 0) > 0) {
             while (cur != null && cur.moveToNext()) {
-                String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+                Long id = cur.getLong(cur.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 String thumbNailUri = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI));
                 String photoUri = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
                 String number = "";
 
                 if (cur.getInt(cur.getColumnIndex( ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
-                    Cursor pCur = cr.query(
-                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                            null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{id}, null);
-                    int i = 0;
-                    while (pCur.moveToNext()) {
-                        i++;
-                        number = pCur.getString(pCur.getColumnIndex(
-                                ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        Log.i(TAG, "Name: " + name);
-                        Log.i(TAG, "Phone Number: " + number);
-                    }
-                    contacts.add(new Contact(Long.parseLong(id), name, number, R.drawable.userpic));
-                    Log.i(TAG, "\n\nTotal contacts : " + i + "\n\n");
-                    pCur.close();
+                    sContacts.add(new Contact(id, name, "", R.drawable.userpic));
                 }
             }
         }
         if(cur!=null){
-            cur.close();
+            //cur.close();
         }
     }
 
+    public Set<String> findNumbersById(Long id){
+
+        Set<String> numbers = new HashSet<>();
+        Cursor pCur = cr.query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                null,
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                new String[]{id.toString()}, null);
+
+        while (pCur.moveToNext()) {
+            numbers.add(pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
+        }
+        Log.i(TAG, "\n\n" + id + " ===> unique numbers : " + numbers.size() + "\n\n");
+        pCur.close();
+
+        return numbers;
+    }
+
     public static Contact getByNumber(String number) {
-        for(Contact c : sContacts.values()) {
+        for(Contact c : sContacts) {
             if(c.getNumber().equals(number))
                 return c;
         }
 
         String name = resolveNumber(number);
-        Contact c = new Contact(-1, name, number, R.drawable.userpic);
+        Contact c = new Contact(-1L, name, number, R.drawable.userpic);
         // TODO: Figure out the recipient ID mess.
         return c;
     }
 
     public static Contact getByName(String name) {
-        for(Contact c : sContacts.values()) {
+        for(Contact c : sContacts) {
             if(c.getName().equals(name))
                 return c;
         }
@@ -105,8 +110,10 @@ public class ContactStore {
     }
 
     public static Contact getByRecipientId(long recipientId) {
-        if(sContacts.containsKey(recipientId))
-            return sContacts.get(recipientId);
+        for(Contact c : sContacts) {
+            if (c.getId().equals(recipientId))
+                return c;
+        }
 
         String number = resolveIdToName(recipientId);
         String name = resolveNumber(number);
@@ -114,7 +121,7 @@ public class ContactStore {
         Contact c = new Contact(recipientId, name, number, R.drawable.userpic);
 
         if(name != null)
-            sContacts.put(c.getId(), c);
+            c.setId(c.getId());
         return c;
     }
 
@@ -145,7 +152,7 @@ public class ContactStore {
             }
 
             Contact c = Contact.parseCached(s);
-            sContacts.put(c.getId(), c);
+            c.setId(c.getId());
         }
     }
 
@@ -160,7 +167,7 @@ public class ContactStore {
         }
         PrintWriter writer = new PrintWriter(fs);
 
-        for(Contact c : sContacts.values()) {
+        for(Contact c : sContacts) {
             writer.println(c);
         }
         writer.flush();

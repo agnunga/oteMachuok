@@ -25,13 +25,16 @@
             style="@style/h2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/tv_phone_no"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:text="Laura Owens"
             android:textAppearance="@style/Light" />
 
-        <TextView
+        <!--
+
+            android:layout_above="@+id/tv_phone_no"
+
+            <TextView
             android:id="@+id/tv_phone_no"
             style="@style/h3Info"
             android:layout_width="wrap_content"
@@ -40,6 +43,6 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:text="+254712929181"
-            android:textAppearance="@style/Light" />
+            android:textAppearance="@style/Light" />-->
     </RelativeLayout>
 </RelativeLayout>

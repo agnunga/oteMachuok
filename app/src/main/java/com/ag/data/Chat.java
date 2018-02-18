@@ -1,7 +1,7 @@
 package com.ag.data;
 
 public class Chat {
-    private long threadId;
+    private Long threadId;
     private long date;
     private String msgCount;
     private long lastMsgId;
@@ -29,11 +29,11 @@ public class Chat {
         this.online = online;
     }
 
-    public long getThreadId() {
+    public Long getThreadId() {
         return threadId;
     }
 
-    public void setThreadId(long threadId) {
+    public void setThreadId(Long threadId) {
         this.threadId = threadId;
     }
 

@@ -13,7 +13,10 @@ import com.ag.R;
 import com.ag.data.Contact;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Ag.
@@ -25,7 +28,7 @@ public class ContactAdapter extends SelectableAdapter<ContactAdapter.ViewHolder>
     private Context mContext;
     private ContactAdapter.ViewHolder.ClickListener clickListener;
 
-    public ContactAdapter (Context context, List<Contact> arrayList,ContactAdapter.ViewHolder.ClickListener clickListener) {
+    public ContactAdapter (Context context, List<Contact> arrayList, ContactAdapter.ViewHolder.ClickListener clickListener) {
         this.mArrayList = arrayList;
         this.mContext = context;
         this.clickListener = clickListener;
@@ -44,7 +47,6 @@ public class ContactAdapter extends SelectableAdapter<ContactAdapter.ViewHolder>
     public void onBindViewHolder(ContactAdapter.ViewHolder viewHolder, int position) {
         viewHolder.tvName.setText(mArrayList.get(position).getName());
         viewHolder.userPhoto.setImageResource(mArrayList.get(position).getImage());
-        viewHolder.userPhoto.setImageResource(mArrayList.get(position).getImage());
     }
 
     @Override
@@ -62,7 +64,7 @@ public class ContactAdapter extends SelectableAdapter<ContactAdapter.ViewHolder>
 
         public TextView tvName;
         public ImageView userPhoto;
-        public TextView tvPhoneNo;
+//        public TextView tvPhoneNo;
         private ContactAdapter.ViewHolder.ClickListener listener;
         //private final View selectedOverlay;
 
@@ -73,7 +75,7 @@ public class ContactAdapter extends SelectableAdapter<ContactAdapter.ViewHolder>
             this.listener = listener;
 
             tvName = (TextView) itemLayoutView.findViewById(R.id.tv_user_name);
-            tvPhoneNo = (TextView) itemLayoutView.findViewById(R.id.tv_user_name);
+//            tvPhoneNo = (TextView) itemLayoutView.findViewById(R.id.tv_user_name);
             userPhoto = (ImageView) itemLayoutView.findViewById(R.id.iv_user_photo);
 
             itemLayoutView.setOnClickListener(this);

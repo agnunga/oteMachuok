@@ -1,18 +1,18 @@
 package com.ag.data;
 
 public class Contact {
-    private long id;
+    private Long id;
     private String name;
     private String number;
     private int image;
     private String photoUri;
     private String thumbNailUri;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -60,7 +60,7 @@ public class Contact {
 
     }
 
-    public Contact(long id, String name, String number, int image) {
+    public Contact(Long id, String name, String number, int image) {
         this.id = id;
         this.name = name;
         this.number = number;
@@ -69,7 +69,7 @@ public class Contact {
 
     public static Contact parseCached(String s) {
         String[] line = s.split("\t");
-        int recipientId = Integer.parseInt(line[0]);
+        Long recipientId = new Long(line[0]);
         String name = line[1];
         String number = line[2];
         int image = Integer.parseInt(line[3]);

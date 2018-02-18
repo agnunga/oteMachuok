@@ -16,15 +16,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.ag.data.ContactStore;
 import com.ag.data.Conv;
 import com.ag.data.Contact;
 import com.ag.data.Chat;
 import com.ag.data.ConvStore;
-
 import com.ag.recylcerconv.ConversationRecyclerView;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,8 +47,10 @@ public class ConversationActivity extends BaseActivity {
         setContentView(R.layout.activity_conversation);
 
         Intent i = getIntent();
-//        i.FLAG_ACTIVITY_REORDER_TO_FRONT;
-        if(i.hasExtra("thread_id")) {
+        //i.FLAG_ACTIVITY_REORDER_TO_FRONT;
+        Boolean hasConvId = i.hasExtra("thread_id");
+        Boolean hasContactId = i.hasExtra("contact_id");
+        if(hasConvId || hasContactId) {
             long threadId = i.getLongExtra("thread_id", -1);
             long contactId = i.getLongExtra("contact_id", -1);
             String number = i.getStringExtra("number");
@@ -61,26 +60,32 @@ public class ConversationActivity extends BaseActivity {
             chatItem = new Chat();
             chatItem.setContact(c);
             chatItem.setThreadId(threadId);
-
             //System.out.println("CHAT ITEM ::::::::::: " + chatItem.toString());
+            if (hasConvId) {
+                convStore = new ConvStore(threadId);
+            }
+            else {
+                convStore = new ConvStore(number);
+            }
 
-            convStore = new ConvStore(chatItem.getThreadId());
-//            convStore.update();
+            //convStore.update();
             setupToolbarWithUpNav(R.id.toolbar, chatItem.getContact().getName(), R.drawable.ic_action_back);
             convItems = convStore.getAllConvs();
             System.out.println("SIZE convItems =============== " + convItems.size());
-
+            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
             mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
             mRecyclerView.setHasFixedSize(true);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            mRecyclerView.setLayoutManager(linearLayoutManager);
+            //linearLayoutManager.setReverseLayout(true);
             mAdapter = new ConversationRecyclerView(this, convItems);
             mRecyclerView.setAdapter(mAdapter);
-            mRecyclerView.postDelayed(new Runnable() {
+            mRecyclerView.scrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
+            /*mRecyclerView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() -1);
+                    mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
                 }
-            }, 0);
+            }, 500);*/
 
             newSmsEt = (EditText) findViewById(R.id.et_message);
             newSmsEt.setOnClickListener(new View.OnClickListener() {
@@ -91,13 +96,12 @@ public class ConversationActivity extends BaseActivity {
                         public void run() {
                             mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
                         }
-                    }, 0);
+                    }, 500);
                 }
             });
             send = (Button) findViewById(R.id.bt_send);
 
             final String final_number = number;
-
             send.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -112,16 +116,14 @@ public class ConversationActivity extends BaseActivity {
                         convItem.setBody(newSmsEt.getText().toString());
                         convList.add(convItem);
                         mAdapter.addItem(convList);
-                        mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() -1);
+                        mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
                         newSmsEt.setText("");
                     }
                 }
             });
         }else {
-            Log.i(TAG, "Has no thread id");
+          /*  Log.i(TAG, "Has no thread id");
             setContentView(R.layout.compose_message_activity);
-
-            // Initialize GUI elements.
             mHistory = (ListView) findViewById(R.id.history);
             mSubject = (TextView) findViewById(R.id.subject);
             mTextEditor = (TextView) findViewById(R.id.text_editor);
@@ -129,6 +131,8 @@ public class ConversationActivity extends BaseActivity {
             mSendButton.setOnClickListener(new SendListener(this));
 
             updateTitleBar();
+            */
+            onBackPressed();
         }
 
     }
@@ -136,9 +140,9 @@ public class ConversationActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent i = new Intent(this, MainActivity.class);
-        startActivity(i);
-//        finish();
+        finish();
+       /* Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);*/
     }
 
     @Override
@@ -190,7 +194,7 @@ public class ConversationActivity extends BaseActivity {
             }
             if(sent){
                 //Log.d(TAG, "Go to the conversation itself...." + chatItem.toString());
-//                goToConversation(ConversationActivity.this, chatItem);
+                //goToConversation(ConversationActivity.this, chatItem);
                 Intent i = new Intent(ConversationActivity.this, MainActivity.class);
                 i.putExtra("frgToLoad", 1);
                 startActivity(i);

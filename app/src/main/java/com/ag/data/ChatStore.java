@@ -55,7 +55,7 @@ public class ChatStore {
 
     public void update() {
         Benchmarker.start("ConvUpdate");
-        mChats.clear();
+        //mChats.clear();
         mCursor.requery();
         if(mCursor == null || mCursor.getCount() == 0) {
             return;
@@ -97,7 +97,9 @@ public class ChatStore {
     }
 
     public Chat getConversation(int position) {
-        return mChats.get(position);
+        Chat chat = mChats.get(position);
+        Log.i(Messola.TAG, "Contact ::: " + chat.toString());
+        return chat;
     }
 
     private class ChangeObserver extends ContentObserver {
