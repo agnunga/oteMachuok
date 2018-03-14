@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 public class ChatStore {
+    ContactStore contactStore = new ContactStore();
     private static final String TAG = BaseActivity.TAG + "/ConvStore";
     private static final String[] PROJECTION = new String[] {
             "_id",
@@ -77,7 +78,7 @@ public class ChatStore {
                 mChats.add(chatItem);
 
             int recipient_id = mCursor.getInt(3);
-            Contact recipient = ContactStore.getByRecipientId(recipient_id);
+            Contact recipient = contactStore.getByRecipientId(recipient_id);
             chatItem.setContact(recipient);
             if(chatItem.getRead() == 0) {
                 chatItem.setUnreadCount(unreadSms(chatItem.getContact().getNumber()));

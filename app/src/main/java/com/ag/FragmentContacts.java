@@ -36,6 +36,10 @@ public class FragmentContacts extends Fragment implements ContactAdapter.ViewHol
         setHasOptionsMenu(true);
     }
 
+    public void setList(List<Contact> list) {
+        this.contacts = list;
+    }
+
     public void onCreate(Bundle a){
         super.onCreate(a);
         setHasOptionsMenu(true);
@@ -48,6 +52,8 @@ public class FragmentContacts extends Fragment implements ContactAdapter.ViewHol
 
         contactStore = new ContactStore();
         contacts = contactStore.getContactList();
+//        new ContactStore(this).execute();
+
         getActivity().supportInvalidateOptionsMenu();
         ((MainActivity)getActivity()).changeTitle(R.id.toolbar, "Contacts");
 

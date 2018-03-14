@@ -1,14 +1,22 @@
 package com.ag.data;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.PhoneLookup;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.widget.ImageView;
+
+import com.ag.FragmentContacts;
 import com.ag.Messola;
 import com.ag.R;
 import java.io.BufferedReader;
@@ -16,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -29,16 +38,50 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class ContactStore {
+public class ContactStore extends AsyncTask<Void, Void, List<Contact>>{
     private static Context sContext = Messola.getContext();
     private static ContentResolver sResolver = sContext.getContentResolver();
     private static List<Contact> sContacts = new ArrayList<>();
+
+    FragmentContacts fragmentContacts;
 
     private static final String CACHE_FILE_NAME = "ContactsCache.txt";
     private static final String TAG = "ContactStore";
 
     private ContentResolver cr ;
     private Cursor cur;
+
+    /*@Override
+    protected List<Contact> doInBackground(Void... voids) {
+        return null;
+    }
+
+    @Override
+    protected void onPostExecute(List<Contact> contacts) {
+        super.onPostExecute(contacts);
+        fragmentContacts.setList(getContactList());
+    }
+*/
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+    }
+
+    @Override
+    protected void onPostExecute(List<Contact> contacts) {
+        super.onPostExecute(contacts);
+        fragmentContacts.setList(contacts);
+    }
+
+    @Override
+    protected List<Contact> doInBackground(Void... voids) {
+        return getContactList();
+    }
+
+    public ContactStore(FragmentContacts fragmentContacts){
+        this.fragmentContacts = fragmentContacts;
+    }
 
     public ContactStore() {
         cr = Messola.getContext().getContentResolver();
@@ -62,13 +105,22 @@ public class ContactStore {
                 String number = "";
 
                 if (cur.getInt(cur.getColumnIndex( ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
-                    sContacts.add(new Contact(id, name, "", R.drawable.userpic));
+                    sContacts.add(new Contact(id, name, "", loadImage(id)));
                 }
             }
         }
         if(cur!=null){
             //cur.close();
         }
+    }
+
+    public Bitmap loadImage(long id){
+        Bitmap bitmap2 = retrieveContactPhoto(id+"");
+        if(bitmap2 != null)
+            return   bitmap2;
+
+        Bitmap bitmap = BitmapFactory.decodeResource(sContext.getResources(), R.drawable.userpic);
+        return bitmap;
     }
 
     public Set<String> findNumbersById(Long id){
@@ -89,14 +141,95 @@ public class ContactStore {
         return numbers;
     }
 
-    public static Contact getByNumber(String number) {
+    /*@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_PICK_CONTACTS && resultCode == RESULT_OK) {
+            Log.d(TAG, "Response: " + data.toString());
+            uriContact = data.getData();
+
+            retrieveContactName();
+            retrieveContactNumber();
+            retrieveContactPhoto();
+
+        }
+    }*/
+
+    private Bitmap retrieveContactPhoto(String contactID) {
+        Bitmap photo = null;
+        try {
+            InputStream inputStream = ContactsContract.Contacts.openContactPhotoInputStream(cr,
+                    ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, new Long(contactID)));
+            if (inputStream != null) {
+                photo = BitmapFactory.decodeStream(inputStream);
+                /* ImageView imageView = (ImageView) findViewById(R.id.img_contact);
+                imageView.setImageBitmap(photo);*/
+            }
+
+            if(inputStream != null)
+                inputStream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return photo;
+
+    }
+
+    /*private String retrieveContactNumber(String contactID) {
+        String contactNumber = null;
+        // getting contacts ID
+        Cursor cursorID = cr.query(uriContact,
+                new String[]{ContactsContract.Contacts._ID},
+                null, null, null);
+
+        if (cursorID.moveToFirst()) {
+            contactID = cursorID.getString(cursorID.getColumnIndex(ContactsContract.Contacts._ID));
+        }
+        cursorID.close();
+        Log.d(TAG, "Contact ID: " + contactID);
+        // Using the contact ID now we will get contact phone number
+        Cursor cursorPhone = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER},
+
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? AND " +
+                        ContactsContract.CommonDataKinds.Phone.TYPE + " = " +
+                        ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
+
+                new String[]{contactID},
+                null);
+
+        if (cursorPhone.moveToFirst()) {
+            contactNumber = cursorPhone.getString(cursorPhone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+        }
+        cursorPhone.close();
+        Log.d(TAG, "Contact Phone Number: " + contactNumber);
+        return contactNumber;
+    }
+
+    private String retrieveContactName() {
+        String contactName = null;
+        // querying contact data store
+        Cursor cursor = cr.query(uriContact, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            // DISPLAY_NAME = The display name for the contact.
+            // HAS_PHONE_NUMBER =   An indicator of whether this contact has at least one phone number.
+            contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+        }
+        cursor.close();
+        Log.d(TAG, "Contact Name: " + contactName);
+        return contactName;
+    }*/
+
+    public Contact getByNumber(String number) {
         for(Contact c : sContacts) {
             if(c.getNumber().equals(number))
                 return c;
         }
 
         String name = resolveNumber(number);
-        Contact c = new Contact(-1L, name, number, R.drawable.userpic);
+        Contact c = new Contact(-1L, name, number, loadImage(-1L));
         // TODO: Figure out the recipient ID mess.
         return c;
     }
@@ -109,7 +242,7 @@ public class ContactStore {
         return null;
     }
 
-    public static Contact getByRecipientId(long recipientId) {
+    public Contact getByRecipientId(long recipientId) {
         for(Contact c : sContacts) {
             if (c.getId().equals(recipientId))
                 return c;
@@ -118,7 +251,7 @@ public class ContactStore {
         String number = resolveIdToName(recipientId);
         String name = resolveNumber(number);
 
-        Contact c = new Contact(recipientId, name, number, R.drawable.userpic);
+        Contact c = new Contact(recipientId, name, number, loadImage(recipientId));
 
         if(name != null)
             c.setId(c.getId());

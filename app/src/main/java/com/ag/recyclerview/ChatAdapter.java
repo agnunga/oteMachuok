@@ -59,7 +59,7 @@ public class ChatAdapter extends SelectableAdapter<ChatAdapter.ViewHolder> {
             viewHolder.checked.setVisibility(View.GONE);
         }
         viewHolder.tvTime.setText(DateUtil.ago(new Date(chatList.get(position).getDate())));
-        viewHolder.userPhoto.setImageResource(chatList.get(position).getContact().getImage());
+        viewHolder.userPhoto.setImageBitmap(chatList.get(position).getContact().getImage());
         if (chatList.get(position).isOnline()){
             viewHolder.onlineView.setVisibility(View.VISIBLE);
         }else

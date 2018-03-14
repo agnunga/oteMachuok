@@ -9,6 +9,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.support.v7.app.ActionBar;
 import android.telephony.SmsManager;
@@ -118,5 +119,19 @@ public class Messola extends android.app.Application {
         progressDialog.dismiss();
     }
 
-
+    public void recordCall() {
+        MediaRecorder recorder = new MediaRecorder();
+        recorder.reset();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        recorder.setOutputFile("/phone_record/");
+        try {
+            recorder.prepare();
+        } catch (java.io.IOException e) {
+            recorder = null;
+            return;
+        }
+        recorder.start();
+    }
 }
