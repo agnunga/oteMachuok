@@ -9,8 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
@@ -24,7 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ag.data.Chat;
-import com.ag.utilis.TelephonyInfo;
+import com.ag.utilis.mail.Mail2;
 
 import java.util.List;
 
@@ -221,6 +221,23 @@ public class BaseActivity extends AppCompatActivity {
 
         }
         startActivity(intent);
+    }
+
+    protected void sendEmailByMailIntent(String[] TO, String[] CC, String subject, String body) {
+        Log.i("Send email", "");
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setData(Uri.parse("mailto:"));
+        emailIntent.setType("text/plain");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+        emailIntent.putExtra(Intent.EXTRA_CC, CC);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+        try {
+            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            Log.i(TAG, "Finished sending email...");
+        } catch (android.content.ActivityNotFoundException ex) {
+            showToast( "There is no email client installed.");
+        }
     }
 
 }

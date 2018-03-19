@@ -1,10 +1,12 @@
 package com.ag.data;
 
+import android.graphics.Bitmap;
+
 public class Contact {
     private Long id;
     private String name;
     private String number;
-    private int image;
+    private Bitmap image;
     private String photoUri;
     private String thumbNailUri;
 
@@ -32,11 +34,11 @@ public class Contact {
         this.number = number;
     }
 
-    public int getImage() {
+    public Bitmap getImage() {
         return image;
     }
 
-    public void setImage(int image) {
+    public void setImage(Bitmap image) {
         this.image = image;
     }
 
@@ -60,7 +62,7 @@ public class Contact {
 
     }
 
-    public Contact(Long id, String name, String number, int image) {
+    public Contact(Long id, String name, String number, Bitmap image) {
         this.id = id;
         this.name = name;
         this.number = number;
@@ -72,8 +74,7 @@ public class Contact {
         Long recipientId = new Long(line[0]);
         String name = line[1];
         String number = line[2];
-        int image = Integer.parseInt(line[3]);
-        return new Contact(recipientId, name, number, image);
+        return new Contact(recipientId, name, number, null);
     }
 
     @Override

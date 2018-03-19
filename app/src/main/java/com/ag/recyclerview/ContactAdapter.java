@@ -46,7 +46,7 @@ public class ContactAdapter extends SelectableAdapter<ContactAdapter.ViewHolder>
     @Override
     public void onBindViewHolder(ContactAdapter.ViewHolder viewHolder, int position) {
         viewHolder.tvName.setText(mArrayList.get(position).getName());
-        viewHolder.userPhoto.setImageResource(mArrayList.get(position).getImage());
+        viewHolder.userPhoto.setImageBitmap(mArrayList.get(position).getImage());
     }
 
     @Override

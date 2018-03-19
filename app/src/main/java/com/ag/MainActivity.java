@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -19,8 +18,8 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
 import com.ag.utilis.TelephonyInfo;
+import com.ag.utilis.mail.SendMail2;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     TextView chats;
@@ -49,6 +48,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupToolbar(R.id.toolbar, "Messages");
 
         FragmentTransaction ft;
+        /*String userName = "yolojeya@gmail.com";
+        String password = "pzpoaarxutxasluw";
+
+        String[] to = {"agunga3d@gmail.com"};
+        String[] from = {"yolojeya@gmail.com"};
+        String subj = "Trial 101";
+        String body = "Body 101";*/
+
+        /*sendEmail(to, from, subj, body);*/
+        /*new SendMail2().execute(userName, password, to[0], from[0], subj, body);*/
+        /*new SendMail2().execute();*/
 
         Intent i = getIntent();
         if(i.hasExtra("frgToLoad")) {
@@ -176,6 +186,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         return super.onPrepareOptionsMenu(menu);

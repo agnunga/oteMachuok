@@ -31,5 +31,7 @@ dependencies {
     compile 'com.simplecityapps:recyclerview-fastscroll:1.0.5'
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     compile 'com.android.support:support-v4:25.4.0'
+    compile 'org.apache.commons:commons-email:1.4'
+    compile 'com.google.code.gson:gson:2.8.1'
     testCompile 'junit:junit:4.12'
 }

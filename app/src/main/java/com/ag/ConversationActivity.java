@@ -28,6 +28,8 @@ import java.util.List;
 
 public class ConversationActivity extends BaseActivity {
 
+    ContactStore contactStore = new ContactStore();
+
     private RecyclerView mRecyclerView;
     private ConversationRecyclerView mAdapter;
     private EditText newSmsEt;
@@ -42,6 +44,7 @@ public class ConversationActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         convItems = new ArrayList<>();
         setContentView(R.layout.activity_conversation);
@@ -56,7 +59,7 @@ public class ConversationActivity extends BaseActivity {
             String number = i.getStringExtra("number");
             String name = i.getStringExtra("name");
 
-            Contact c = new Contact(contactId, name, number, R.drawable.userpic);
+            Contact c = new Contact(contactId, name, number, contactStore.loadImage(contactId));
             chatItem = new Chat();
             chatItem.setContact(c);
             chatItem.setThreadId(threadId);
@@ -181,7 +184,7 @@ public class ConversationActivity extends BaseActivity {
             mTextEditor.setText("");*/
 
             if(chatItem == null) {
-                Contact c = ContactStore.getByNumber(mSubject.getText().toString());
+                Contact c = contactStore.getByNumber(mSubject.getText().toString());
                 long threadId = Telephony.Threads.getOrCreateThreadId(Messola.getContext(), c.getNumber());
                 chatItem = new Chat();
                 chatItem.setContact(c);
