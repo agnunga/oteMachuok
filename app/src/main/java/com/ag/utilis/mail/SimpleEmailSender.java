@@ -1,3 +1,4 @@
+/*
 package com.ag.utilis.mail;
 
 import android.os.AsyncTask;
@@ -12,10 +13,12 @@ public class SimpleEmailSender extends AsyncTask<String, Integer, Void> {
     private static final String HOST = "smtp.gmail.com";
     private static final int PORT = 587;
     private static final boolean SSL_FLAG = true;
+*/
 /*
     public static void main(String[] args) {
         SimpleEmailSender.sendSimpleEmail(null, null, null, "Hello from Apache Mail2");
-    }*/
+    }*//*
+
 
     public static void sendSimpleEmail(String fromAddress, String toAddress, String subject, String message) {
 
@@ -58,4 +61,4 @@ public class SimpleEmailSender extends AsyncTask<String, Integer, Void> {
         sendSimpleEmail(fromAddress, toAddress, subject, message);
         return null;
     }
-}
+}*/

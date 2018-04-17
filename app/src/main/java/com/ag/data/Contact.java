@@ -10,6 +10,12 @@ public class Contact {
     private String photoUri;
     private String thumbNailUri;
 
+    private String address;
+    /**
+     * We don't want to serialize it. :) because we can't serialize it.
+     */
+    private transient Bitmap photo;
+
     public Long getId() {
         return id;
     }
@@ -89,6 +95,22 @@ public class Contact {
         sb.append(number);
         sb.append(">");
         return sb.toString();
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Bitmap getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Bitmap photo) {
+        this.photo = photo;
     }
 }
 

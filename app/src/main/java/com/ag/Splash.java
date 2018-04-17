@@ -28,8 +28,9 @@ public class Splash extends AppCompatActivity {
                 startActivity(new Intent(Splash.this, MainActivity.class));
                 finish();
             }
-        }, 1*200);
+        }, 1*20);
     }
+
     private void changeStatusBarColor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();

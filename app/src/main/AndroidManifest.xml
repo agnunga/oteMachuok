@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ag">
 
-
+    <uses-sdk
+        android:minSdkVersion="19"
+        android:targetSdkVersion="21" />
 
     <application
         android:allowBackup="true"
@@ -12,15 +14,57 @@
         android:theme="@style/AppTheme"
         android:name=".Messola">
 
-        <service android:enabled="true" android:name=".ResponderService">
+        <service
+            android:name=".ResponderService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE">
+            <intent-filter>
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
         </service>
+
+        <activity android:name="com.ag.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.Trans">
+            <intent-filter>
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.ACTION_RESPONSE_VIA_MESSAGE" />
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
+                <action android:name="android.intent.action.SEND_RESPOND_VIA_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+
+        </activity>
 
         <activity
             android:name="com.ag.Splash"
             android:theme="@style/AppThemeFull">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -28,23 +72,53 @@
         <activity
             android:name="com.ag.BaseActivity">
         </activity>
-        <activity
-            android:name="com.ag.SetupPhoneNumber"
+        <activity android:name="com.ag.SetupPhoneNumber"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name="com.ag.MainActivity"
-            android:label="@string/title_activity_main"
-        android:theme="@style/AppTheme.Trans"></activity>
         <activity
             android:name="com.ag.ConversationActivity"
             android:parentActivityName="com.ag.MainActivity"
-        android:theme="@style/AppTheme.Trans"></activity>
-
-        <receiver android:name=".CallRecoderBroadcast">
+            android:theme="@style/AppTheme.Trans">
             <intent-filter>
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.ACTION_RESPONSE_VIA_MESSAGE" />
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
+                <action android:name="android.intent.action.SEND_RESPOND_VIA_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".CallRecoderBroadcast"
+            android:enabled="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="9999">
+                <action android:name="android.provider.Telephony.SMS_DELIVER" />
                 <action android:name="android.intent.action.PHONE_STATE" />
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+                <action android:name="android.intent.action.ACTION_SENDTO" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SMS_DELIVER_ACTION" />
+                <action android:name="android.provider.Telephony.SMS_DELIVER" />
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
             </intent-filter>
         </receiver>
+
     </application>
 
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>

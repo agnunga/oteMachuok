@@ -1,8 +1,12 @@
 package com.ag;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
@@ -16,12 +20,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.ag.data.ContactStore;
-import com.ag.data.Conv;
+import com.ag.data.Conversation;
 import com.ag.data.Contact;
 import com.ag.data.Chat;
 import com.ag.data.ConvStore;
 import com.ag.recylcerconv.ConversationRecyclerView;
+import com.ag.utilis.Utils;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,20 +42,24 @@ public class ConversationActivity extends BaseActivity {
     private ConversationRecyclerView mAdapter;
     private EditText newSmsEt;
     private Button send;
-    private List<Conv> convItems;
+    private List<Conversation> conversationItems;
     private ListView mHistory;
     private TextView mSubject;
     private TextView mTextEditor;
     private Button mSendButton;
     private ConvStore convStore;
     private Chat chatItem;
+    private boolean markReadInDefaultSmsApp;
+    private String smsNumber;
+    private String smsBoby;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        convItems = new ArrayList<>();
+        conversationItems = new ArrayList<>();
         setContentView(R.layout.activity_conversation);
+        //markReadInDefaultSmsApp = true;
 
         Intent i = getIntent();
         //i.FLAG_ACTIVITY_REORDER_TO_FRONT;
@@ -56,10 +68,10 @@ public class ConversationActivity extends BaseActivity {
         if(hasConvId || hasContactId) {
             long threadId = i.getLongExtra("thread_id", -1);
             long contactId = i.getLongExtra("contact_id", -1);
-            String number = i.getStringExtra("number");
+            smsNumber = i.getStringExtra("number");
             String name = i.getStringExtra("name");
 
-            Contact c = new Contact(contactId, name, number, contactStore.loadImage(contactId));
+            Contact c = new Contact(contactId, name, smsNumber, contactStore.loadImage(contactId));
             chatItem = new Chat();
             chatItem.setContact(c);
             chatItem.setThreadId(threadId);
@@ -68,19 +80,25 @@ public class ConversationActivity extends BaseActivity {
                 convStore = new ConvStore(threadId);
             }
             else {
-                convStore = new ConvStore(number);
+                convStore = new ConvStore(smsNumber);
             }
 
             //convStore.update();
             setupToolbarWithUpNav(R.id.toolbar, chatItem.getContact().getName(), R.drawable.ic_action_back);
-            convItems = convStore.getAllConvs();
-            System.out.println("SIZE convItems =============== " + convItems.size());
+            conversationItems = convStore.getAllConvs();
+            System.out.println("SIZE conversationItems =============== " + conversationItems.size());
+
+            //Read SMS
+            smsBoby = conversationItems.get(conversationItems.size()-1).getBody();
+            markMessageRead(smsNumber, smsBoby);
+            Log.w("ToBeMarkRead", "The number ::: " + smsNumber + " Body ::: " + smsBoby);
+
             final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
             mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-            mRecyclerView.setHasFixedSize(true);
+            mRecyclerView.setHasFixedSize(false);
             mRecyclerView.setLayoutManager(linearLayoutManager);
             //linearLayoutManager.setReverseLayout(true);
-            mAdapter = new ConversationRecyclerView(this, convItems);
+            mAdapter = new ConversationRecyclerView(this, conversationItems);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.scrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
             /*mRecyclerView.postDelayed(new Runnable() {
@@ -104,7 +122,7 @@ public class ConversationActivity extends BaseActivity {
             });
             send = (Button) findViewById(R.id.bt_send);
 
-            final String final_number = number;
+            final String final_number = smsNumber;
             send.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -112,13 +130,13 @@ public class ConversationActivity extends BaseActivity {
                         //Send and save sms
                         /*selectSim(final_number);*/
                         Messola.sendMessage2(final_number, newSmsEt.getText().toString());
-                        List<Conv> convList = new ArrayList<>();
-                        Conv convItem = new Conv();
-                        convItem.setDate(new Date().getTime());
-                        convItem.setType("2");
-                        convItem.setBody(newSmsEt.getText().toString());
-                        convList.add(convItem);
-                        mAdapter.addItem(convList);
+                        List<Conversation> conversationList = new ArrayList<>();
+                        Conversation conversationItem = new Conversation();
+                        conversationItem.setDate(new Date().getTime());
+                        conversationItem.setType("2");
+                        conversationItem.setBody(newSmsEt.getText().toString());
+                        conversationList.add(conversationItem);
+                        mAdapter.addItem(conversationList);
                         mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
                         newSmsEt.setText("");
                     }
@@ -138,14 +156,6 @@ public class ConversationActivity extends BaseActivity {
             onBackPressed();
         }
 
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-       /* Intent i = new Intent(this, MainActivity.class);
-        startActivity(i);*/
     }
 
     @Override
@@ -206,6 +216,25 @@ public class ConversationActivity extends BaseActivity {
         }
     }
 
+
+    @Override
+    public void onBackPressed() {
+        if (markReadInDefaultSmsApp) {
+            Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+            smsIntent.setType("vnd.android-dir/mms-sms");
+            smsIntent.putExtra("address", smsNumber);
+            //smsIntent.putExtra("sms_body","Body of Message");
+            startActivity(smsIntent);
+            markReadInDefaultSmsApp = false;
+        }
+
+        super.onBackPressed();
+        finish();
+       /* Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);*/
+    }
+
+
     @Override
     protected void onPostResume() {
         super.onPostResume();
@@ -230,5 +259,82 @@ public class ConversationActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        defaultAppResolve();
     }
+
+    public void markMessageRead(String number, String body) {
+        Log.w("Mark Read", "Marking: number ::: " + number + " Body ::: " + body);
+        Uri uri = Uri.parse("content://sms/inbox");
+        Cursor cursor = Messola.getContext().getContentResolver().query(uri, null, null, null, null);
+        try{
+
+            while (cursor.moveToNext()) {
+                if ((cursor.getString(cursor.getColumnIndex("address")).equals(number)) && (cursor.getInt(cursor.getColumnIndex("read")) == 0)) {
+                    if (cursor.getString(cursor.getColumnIndex("body")).startsWith(body)) {
+                        String SmsMessageId = cursor.getString(cursor.getColumnIndex("_id"));
+                        ContentValues values = new ContentValues();
+                        values.put("read", true);
+                        Messola.getContext().getContentResolver().update(Uri.parse("content://sms/inbox"), values, "_id=" + SmsMessageId, null);
+                        return;
+                    }
+                }
+            }
+        }catch(Exception e)
+        {
+            Log.e("Mark Read", "Error in Read: "+e.toString());
+        }
+    }
+
+    private void defaultAppResolve() {
+
+        if (!Utils.isDefaultSmsApp(getApplicationContext())) {
+            Log.d(TAG, "not default app");
+            // App is not default.
+            // Show the "not currently set as the default SMS app" interface
+            View viewGroup = findViewById(R.id.not_default_app);
+            viewGroup.setVisibility(View.VISIBLE);
+
+            // Set up a button that allows the user to change the default SMS app
+            setUpDefaultAppResolver();
+        } else {
+            // App is the default.
+            // Hide the "not currently set as the default SMS app" interface
+            View viewGroup = findViewById(R.id.not_default_app);
+            viewGroup.setVisibility(View.GONE);
+        }
+    }
+
+    @TargetApi(19)
+    private void setUpDefaultAppResolver(){
+        Button button = (Button) findViewById(R.id.change_default_app);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, getPackageName());
+                startActivityForResult(intent, DEFAULT_SMS_REQUEST);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case DEFAULT_SMS_REQUEST:
+                int msgId;
+                if (resultCode == Activity.RESULT_OK) {
+                    View viewGroup = findViewById(R.id.not_default_app);
+                    viewGroup.setVisibility(View.GONE);
+                    msgId = R.string.sms_default_success;
+                } else {
+                    msgId = R.string.sms_default_fail;
+                }
+                Toast.makeText(getBaseContext(), msgId, Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
+
+
+    private final int DEFAULT_SMS_REQUEST = 14;
+
 }
